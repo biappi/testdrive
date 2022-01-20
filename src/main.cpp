@@ -5,8 +5,8 @@
 //  Created by Antonio Malara on 11/10/2020.
 //
 
-#include "raylib.h"
-#include "rlgl.h"
+#include "../vendor/raylib_osx/raylib.h"
+#include "../vendor/raylib_osx/rlgl.h"
 #include "main.h"
 
 #include <utility>
@@ -1120,12 +1120,11 @@ int main(void)
     auto &scene = res.m_scenes[0];
 
     int tileid = 0;
-    
+
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
-
   
     // Generate a checked texture by code
     int width = 960;
