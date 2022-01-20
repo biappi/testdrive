@@ -734,7 +734,7 @@ int main_______34534()
         all_tiles.back().load();
     }
     
-    assert(all_tiles.size() == all_tiles_models.size());
+    // assert(all_tiles.size() == all_tiles_models.size());
 
     Camera camera = { 0 };
     camera.position = (Vector3){ 0.0f, 5.0f, 10.0f };

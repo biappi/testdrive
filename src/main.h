@@ -545,8 +545,7 @@ std::vector<std::byte> Resources::file(const std::string &name) {
         
         return ret;
     }
-    
-    assert(false);
+
     return {};
 }
 
@@ -574,8 +573,7 @@ std::vector<std::byte> Resources::fileForCar(const std::string &name, const std:
         
         return ret;
     }
-    
-    assert(false);
+
     return {};
 }
 
@@ -606,7 +604,6 @@ std::vector<std::byte> Resources::fileForScene(const std::string &name, const st
         return ret;
     }
     
-    assert(false);
     return {};
 }
 
