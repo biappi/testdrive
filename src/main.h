@@ -1,8 +1,6 @@
 // #include "raylib.h"
 // #include "rlgl.h"
 
-#include <CoreFoundation/CoreFoundation.h>
-
 #include <cstddef>
 #include <cstdlib>
 #include <string>
@@ -17,20 +15,6 @@ const int TD3ScreenSizeWidth  = 320;
 const int TD3ScreenSizeHeight = 200;
 
 std::string BasePath() {
-//    auto cfRelativeUrl = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-//    auto cfUrl = CFURLCopyAbsoluteURL(cfRelativeUrl);
-//    auto cfPath = CFURLCopyFileSystemPath(cfUrl, kCFURLPOSIXPathStyle);
-//
-//    auto pathLen = CFStringGetLength(cfPath);
-//    auto cPathLen = CFStringGetMaximumSizeForEncoding(pathLen, kCFStringEncodingUTF8);
-//
-//    char path[cPathLen];
-//    CFStringGetCString(cfPath, path, cPathLen, kCFStringEncodingUTF8);
-//
-//    CFRelease(cfPath);
-//    CFRelease(cfUrl);
-//    CFRelease(cfRelativeUrl);
-
     return "data/";
 }
 
