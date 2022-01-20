@@ -72,8 +72,8 @@ GameImage::GameImage(const std::vector<std::byte> &imageLz, int width, GamePalet
         .data = &m_bitmap[0],
         .width = width,
         .height = height,
-        .format = UNCOMPRESSED_R8G8B8A8,
         .mipmaps = 1,
+        .format = UNCOMPRESSED_R8G8B8A8,
     };
 }
 
@@ -1147,8 +1147,8 @@ int main(void)
         .data = pixels,             // We can assign pixels directly to data
         .width = width,
         .height = height,
+        .mipmaps = 1,
         .format = UNCOMPRESSED_R8G8B8A8,
-        .mipmaps = 1
     };
     
     Texture2D checked = LoadTextureFromImage(checkedIm);
