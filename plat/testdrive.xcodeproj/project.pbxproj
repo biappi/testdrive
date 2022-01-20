@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F92464F279A074500D97C72 /* libraylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12E3279A03DA0065A259 /* libraylib.a */; };
 		3F9C12DE279A03A60065A259 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12D9279A03A60065A259 /* Resources.cpp */; };
 		3F9C12DF279A03A60065A259 /* Decoders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12DA279A03A60065A259 /* Decoders.cpp */; };
 		3F9C12E0279A03A60065A259 /* Models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12DB279A03A60065A259 /* Models.cpp */; };
 		3F9C12E1279A03A60065A259 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12DD279A03A60065A259 /* main.cpp */; };
-		3F9C12E6279A03DA0065A259 /* libraylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12E3279A03DA0065A259 /* libraylib.a */; };
 		3F9C12EA279A046F0065A259 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12E9279A046F0065A259 /* Foundation.framework */; };
 		3F9C12EC279A047F0065A259 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12EB279A047F0065A259 /* CoreGraphics.framework */; };
 		3F9C12EE279A04900065A259 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12ED279A04900065A259 /* IOKit.framework */; };
@@ -61,8 +61,8 @@
 				3F9C12F0279A04950065A259 /* AppKit.framework in Frameworks */,
 				3F9C12EE279A04900065A259 /* IOKit.framework in Frameworks */,
 				3F9C12EC279A047F0065A259 /* CoreGraphics.framework in Frameworks */,
+				3F92464F279A074500D97C72 /* libraylib.a in Frameworks */,
 				3F9C12EA279A046F0065A259 /* Foundation.framework in Frameworks */,
-				3F9C12E6279A03DA0065A259 /* libraylib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,7 +99,8 @@
 				3F9C12DC279A03A60065A259 /* Models.h */,
 				3F9C12DD279A03A60065A259 /* main.cpp */,
 			);
-			path = src;
+			name = src;
+			path = ../src;
 			sourceTree = "<group>";
 		};
 		3F9C12E2279A03DA0065A259 /* raylib_osx */ = {
@@ -111,7 +112,7 @@
 				3F9C12E7279A042A0065A259 /* rlgl.h */,
 			);
 			name = raylib_osx;
-			path = vendor/raylib_osx;
+			path = ../vendor/raylib_osx;
 			sourceTree = "<group>";
 		};
 		3F9C12E8279A046F0065A259 /* Frameworks */ = {
@@ -312,7 +313,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/vendor/raylib_osx",
+					"$(PROJECT_DIR)/../vendor/raylib_osx",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -326,7 +327,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/vendor/raylib_osx",
+					"$(PROJECT_DIR)/../vendor/raylib_osx",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
