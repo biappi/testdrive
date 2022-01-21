@@ -264,17 +264,17 @@ public:
     static const int XTileCount = 32;
     static const int YTileCount = 16;
     
-    int getSingleCourseDataBoh() {
+    int getSingleCourseDataBoh() const {
         static int offset = 0x939d - tta_dseg_start_offset;
         return std::to_integer<uint8_t>(a_dat[offset]);
     }
     
-    uint8_t getCourseDataLut2(int i) {
+    uint8_t getCourseDataLut2(int i) const {
         static int offset = 0x93bf - tta_dseg_start_offset;
         return GetByte(a_dat, offset + i);
     }
     
-    TileInfo getTileInfo(int l) {
+    TileInfo getTileInfo(int l) const {
         static int offset = 0x944f - tta_dseg_start_offset;
   
         return {
@@ -283,7 +283,7 @@ public:
         };
     }
     
-    TileInfo getTileInfo(int tileX, int tileY) {
+    TileInfo getTileInfo(int tileX, int tileY) const {
         return getTileInfo(tileY * XTileCount + tileX);
     }
     
@@ -363,9 +363,9 @@ public:
     Resources(std::string basePath);
     ~Resources();
     
-    std::vector<std::byte> file(const std::string &name);
-    std::vector<std::byte> fileForCar(const std::string &name, const std::string &lowerCarName, const CarLst &carLst);
-    std::vector<std::byte> fileForScene(const std::string &name, const std::string &lowerCarName, const SceneLst &sceneLst);
+    const std::vector<std::byte> file(const std::string &name) const;
+    const std::vector<std::byte> fileForCar(const std::string &name, const std::string &lowerCarName, const CarLst &carLst);
+    const std::vector<std::byte> fileForScene(const std::string &name, const std::string &lowerCarName, const SceneLst &sceneLst);
 
     const std::vector<Car>& cars() { return carsArray; }
     
@@ -524,7 +524,7 @@ std::optional<PackedFileDesc> FindFileDesc(const std::string &name, const std::v
     return {};
 }
 
-std::vector<std::byte> Resources::file(const std::string &name) {
+const std::vector<std::byte> Resources::file(const std::string &name) const {
     const std::map<char, std::string> char_to_files = {
         {'a', "dataa.dat"},
         {'b', "datab.dat"},
@@ -550,7 +550,7 @@ std::vector<std::byte> Resources::file(const std::string &name) {
     return {};
 }
 
-std::vector<std::byte> Resources::fileForCar(const std::string &name, const std::string &lowerCarName, const CarLst &carLst) {
+const std::vector<std::byte> Resources::fileForCar(const std::string &name, const std::string &lowerCarName, const CarLst &carLst) {
     std::vector<PackedFileDesc> files;
     
     for (int i = 0; i < sizeof(carLst.files) / sizeof(PackedFileDesc); i++) {
@@ -578,7 +578,7 @@ std::vector<std::byte> Resources::fileForCar(const std::string &name, const std:
     return {};
 }
 
-std::vector<std::byte> Resources::fileForScene(const std::string &name, const std::string &lowerSceneName, const SceneLst &sceneLst) {
+const std::vector<std::byte> Resources::fileForScene(const std::string &name, const std::string &lowerSceneName, const SceneLst &sceneLst) {
     std::vector<PackedFileDesc> files;
     
     for (int i = 0; i < sizeof(sceneLst.files) / sizeof(PackedFileDesc); i++) {
