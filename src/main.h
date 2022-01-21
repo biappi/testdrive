@@ -656,7 +656,7 @@ void GamePalette::copy(std::vector<Color> src, int at) {
     }
 }
 
-std::vector<Color> PaletteFromData(std::vector<std::byte> data) {
+std::vector<Color> PaletteFromData(const std::vector<std::byte> &data) {
     auto count = data.size() / 3;
     std::vector<Color> palette(count);
     
@@ -668,6 +668,13 @@ std::vector<Color> PaletteFromData(std::vector<std::byte> data) {
     }
 
     return palette;
+}
+
+GamePalette GamePaletteFromData(const std::vector<std::byte> &data, int at) {
+    auto palette = PaletteFromData(data);
+    auto gamePalette = GamePalette();
+    gamePalette.copy(palette, at);
+    return gamePalette;
 }
 
 }

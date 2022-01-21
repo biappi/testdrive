@@ -525,20 +525,13 @@ int mainTestBitmaps(void)
     
     const int screenWidth = TD3ScreenSizeWidth * multiplicator;
     const int screenHeight = TD3ScreenSizeHeight * multiplicator;
-    
-    auto t1 = res.file("SCENETT1.DAT");
-    auto t = res.file("SCENETTT.BIN");
-    auto p = res.file("SCENETTP.BIN");
-    auto o = res.file("SCENETTO.BIN");
-    
+
     auto selclr = res.file("SELCOLR.BIN");
     auto select = res.file("SELECT.LZ");
 
-    auto gamePalette = GamePalette();
+    auto otwcolbin = res.file("OTWCOL.BIN");
 
-    auto selColrPalette = PaletteFromData(selclr);
-    gamePalette.copy(selColrPalette, 0x10);
-    
+    auto gamePalette = GamePaletteFromData(selclr, 0x10);
     auto selectImage = GameImage(select, 320, gamePalette);
 
     auto compass = res.file("COMPASS.LZ");
@@ -549,32 +542,16 @@ int mainTestBitmaps(void)
     
     auto detail1Image = GameImage(detail1, 0x161, gamePalette);
     auto detail2Image = GameImage(detail2, 0x15d, gamePalette);
-    
-    auto otwcolbin = res.file("OTWCOL.BIN");
-    
-    auto otwcol = PaletteFromData(otwcolbin);
 
-    auto otwPalette = GamePalette();
-    otwPalette.copy(otwcol, 0x10);
-    
     auto &car = res.cars()[2];
 
-    auto carsic = PaletteFromData(car.sicbin);
-    auto carsicPalette = GamePalette();
-    carsicPalette.copy(carsic, 0x40);
+    auto carsicPalette = GamePaletteFromData(car.sicbin, 0x40);
+    auto carPalette = GamePaletteFromData(car.col, 0x10);
+    auto scPalette = GamePaletteFromData(car.sc, 0x10);
 
     auto carsicImage = GameImage(car.sic, 0x48, carsicPalette);
 
-    auto carcol = PaletteFromData(car.col);
-    auto carPalette = GamePalette();
-    carPalette.copy(carcol, 0x10);
-
     auto carImages = CarImages(car, carPalette);
-
-    auto sccol = PaletteFromData(car.sc);
-    auto scPalette = GamePalette();
-    scPalette.copy(sccol, 0x10);
-
     auto scImages = CarSCImages(car, scPalette);
 
     SetTargetFPS(30);
@@ -582,8 +559,6 @@ int mainTestBitmaps(void)
     
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
   
-    selectImage.texture();
-
     while (!WindowShouldClose())
     {
         BeginDrawing();
