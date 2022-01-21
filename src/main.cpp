@@ -49,10 +49,7 @@ Vector3 NormalizeTDWorldLocation(TD::Point tdPos) {
     };
 };
 
-#define min(a, b) ((a < b) ? (a) : (b))
-#define max(a, b) ((a < b) ? (b) : (a))
-
-void printa(TD::Model &model)
+void printa(const TD::Model &model)
 {
     if (model.polys().size() == 0)
         return;
@@ -88,7 +85,7 @@ void printa(TD::Model &model)
     printf("\n\n");
 }
 
-void print_sprite_data(TD::Model &model)
+void print_sprite_data(const TD::Model &model)
 {
     for (auto &sprite : model.sprites()) {
         printf("%04x %04x %04x %04x -- (%04x %04x %04x)\n",
@@ -98,6 +95,93 @@ void print_sprite_data(TD::Model &model)
     
     printf("\n");
 }
+
+
+class DONTKNOWTHENAME {
+public:
+    DONTKNOWTHENAME(std::string path)
+        : m_resources(path)
+    {
+        loadOTW();
+        loadGenericTiles();
+        loadSceneTiles();
+        loadObjectModels();
+    }
+
+    TD::Scene& scene() {
+        return m_resources.m_scenes[0];
+    }
+
+    /*
+    void loadMeshes() {
+        for (auto &mesh : m_tile_meshes) {
+            mesh.load();
+        }
+    }
+     */
+
+    const std::vector<TD::Model>& tileModels() {
+        return m_tile_models;
+    }
+
+    std::vector<RayLibMesh>& tileMeshes() {
+        return m_tile_meshes;
+    }
+
+    const std::vector<TD::Model>& objectModels() {
+        return m_object_models;
+    }
+
+    std::vector<RayLibMesh>& objectMeshes() {
+        return m_object_meshes;
+    }
+
+private:
+    void loadOTW() {
+        auto otwcolbin = m_resources.file("OTWCOL.BIN");
+        auto otwcol = TD::PaletteFromData(otwcolbin);
+        m_otwPalette.copy(otwcol, 0x10);
+    }
+
+    void loadGenericTiles() {
+        for (auto &tileTdModel : m_resources.m_genericTiles) {
+            m_tile_models.emplace_back(TD::Model(tileTdModel));
+            m_tile_meshes.emplace_back(RayLibMesh(tileTdModel, m_otwPalette, scene()));
+        }
+    }
+
+    void loadSceneTiles() {
+        for (auto &tileTdModel : scene().tiles) {
+            m_tile_models.emplace_back(TD::Model(tileTdModel));
+            m_tile_meshes.emplace_back(RayLibMesh(tileTdModel, m_otwPalette, scene()));
+        }
+    }
+
+    void loadObjectModels() {
+        int DIOCAN = 0;
+        for (auto &object : scene().m_objects) {
+            if (DIOCAN == 1) continue;
+            if (DIOCAN == 2) continue;
+            if (DIOCAN == 3) continue;
+
+            auto id = object.modelId();
+            auto tdModel = TD::LoadModel(m_resources.m_scenetto, id, object.isLOD());
+
+            m_object_models.emplace_back(TD::Model(tdModel));
+            m_object_meshes.emplace_back(RayLibMesh(tdModel, m_otwPalette, scene()));
+        }
+    }
+
+    TD::Resources m_resources;
+    TD::GamePalette m_otwPalette { };
+    std::vector<RayLibMesh> m_generic_tiles;
+
+    std::vector<TD::Model>  m_tile_models;
+    std::vector<RayLibMesh> m_tile_meshes;
+
+    std::vector<TD::Model>  m_object_models;
+    std::vector<RayLibMesh> m_object_meshes;
+};
 
 #pragma mark - Main Functions
 
@@ -117,38 +201,15 @@ int mainTilesExplorer()
     
     InitWindow(800, 600, "test");
 
-    auto res = TD::Resources(BasePath());
-    auto &scene = res.m_scenes[0];
-        
-    auto otwcolbin = res.file("OTWCOL.BIN");
-    auto otwcol = TD::PaletteFromData(otwcolbin);
-    auto otwPalette = TD::GamePalette();
-    otwPalette.copy(otwcol, 0x10);
-    
-    std::vector<TD::Model>  all_tiles_models;
-    std::vector<RayLibMesh> all_tiles;
+    auto game = DONTKNOWTHENAME(BasePath());
 
-    for (auto &tileTdModel : res.m_genericTiles) {
-        all_tiles_models.emplace_back(TD::Model(tileTdModel));
-        all_tiles.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
-        all_tiles.back().load();
-    }
-    
-    for (auto &tileTdModel : scene.tiles) {
-        all_tiles_models.emplace_back(TD::Model(tileTdModel));
-        all_tiles.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
-        all_tiles.back().load();
-    }
-    
-    // assert(all_tiles.size() == all_tiles_models.size());
-
-    Explorer explorer("TILES EXPLORER", all_tiles.size());
+    Explorer explorer("TILES EXPLORER", game.tileMeshes().size());
 
     SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
 
     rlDisableBackfaceCulling();
 
-    printa(all_tiles_models[0]);
+    printa(game.tileModels()[0]);
     
     while (!WindowShouldClose()) {
 
@@ -158,14 +219,14 @@ int mainTilesExplorer()
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
             printf(" --- tile %zu ---\n", meshNr);
-            print_sprite_data(all_tiles_models[meshNr]);
+            print_sprite_data(game.tileModels()[meshNr]);
         }
 
         BeginDrawing();
 
         explorer.beginDrawingObject();
 
-        for (auto &sprite : all_tiles_models[meshNr].sprites()) {
+        for (auto &sprite : game.tileModels()[meshNr].sprites()) {
             Vector3 pos;
             pos.x =  ((int16_t) sprite.b) / 1024.;
             pos.y =  ((int16_t) sprite.d) / 4096.;
@@ -178,7 +239,7 @@ int mainTilesExplorer()
         DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
         DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
 
-        DrawModel(all_tiles[meshNr]._model(),
+        DrawModel(game.tileMeshes()[meshNr]._model(),
                   { 0 },
                   1,
                   ::WHITE);
@@ -191,39 +252,16 @@ int mainTilesExplorer()
     return 0;
 }
 
-
 int mainModelExplorer()
 {
-    auto res = TD::Resources(BasePath());
-    auto &scene = res.m_scenes[0];
-    
-    auto otwcolbin = res.file("OTWCOL.BIN");
-    auto otwcol = TD::PaletteFromData(otwcolbin);
-    auto otwPalette = TD::GamePalette();
-    otwPalette.copy(otwcol, 0x10);
-    
-    std::vector<std::shared_ptr<TD::Model>> models;
-    std::vector<std::shared_ptr<RayLibMesh>> meshes;
-    
-    int DIOCAN = 0;
-    for (auto &object : scene.m_objects) {
-        if (DIOCAN == 1) continue;
-        if (DIOCAN == 2) continue;
-        if (DIOCAN == 3) continue;
-        
-        auto id = object.modelId();
-        auto model = std::make_shared<TD::Model>(TD::LoadModel(res.m_scenetto, id, object.isLOD()));
-        auto mesh = std::make_shared<RayLibMesh>(RayLibMesh(*model, otwPalette, scene));
-        models.push_back(model);
-        meshes.emplace_back(mesh);
-    }
-    
+    auto game = DONTKNOWTHENAME(BasePath());
+
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
     InitWindow(800, 600, "test");
 
-    auto explorer = Explorer("MODELS EXPLORER", meshes.size());
+    auto explorer = Explorer("MODELS EXPLORER", game.objectMeshes().size());
 
     explorer.setScale(100);
     explorer.setCurrent(86);
@@ -231,7 +269,7 @@ int mainModelExplorer()
     SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
     rlDisableBackfaceCulling();
 
-    printa(*models[explorer.current()]);
+    printa(game.objectModels()[explorer.current()]);
     
     while (!WindowShouldClose()) {
 
@@ -240,13 +278,12 @@ int mainModelExplorer()
         explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printa(*models[meshNr]);
+            printa(game.objectModels()[meshNr]);
         }
 
         explorer.beginDrawingObject();
 
-        auto &model = meshes[meshNr]->_model();
-        DrawModelEx(model,
+        DrawModelEx(game.objectMeshes()[meshNr]._model(),
                     { 0 },
                     { 0, 1, 0 },
                     0,
@@ -256,7 +293,7 @@ int mainModelExplorer()
         explorer.endDrawingObject();
 
         char sucaminchia[100];
-        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, scene.m_objects[meshNr+4].flags());
+        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, game.scene().m_objects[meshNr+4].flags());
         DrawText(sucaminchia, 30, 80, 20, BLUE);
         
         EndDrawing();

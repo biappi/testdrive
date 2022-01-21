@@ -89,7 +89,7 @@ public:
         m_loaded = true;
     }
 
-    const Model &_model() {
+    Model &_model() {
         if (!m_loaded)
             load();
 
