@@ -697,7 +697,9 @@ void barfs(TD::Scene& scene)
     
 }
 
-int main___()
+#pragma mark - Main Functions
+
+int mainTestBarfs()
 {
     auto res = TD::Resources(BasePath());
     auto &scene = res.m_scenes[0];
@@ -706,7 +708,7 @@ int main___()
     exit(0);
 }
 
-int main_______34534()
+int mainTilesExplorer()
 {
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -769,9 +771,6 @@ int main_______34534()
             print_sprite_data(all_tiles_models[meshNr]);
         }
         
-//        if (IsKeyPressed(KEY_UP))  { ZZ-=1; }
-//        if (IsKeyPressed(KEY_DOWN)) { ZZ+=1; }
-
         BeginDrawing();
         ClearBackground(DARKGRAY);
         BeginMode3D(camera);
@@ -821,7 +820,7 @@ int main_______34534()
 }
 
 
-int main______()
+int mainModelExplorer()
 {
     auto res = TD::Resources(BasePath());
     auto &scene = res.m_scenes[0];
@@ -879,9 +878,6 @@ int main______()
         
         meshNr = min(max(meshNr, 0), meshes.size() - 1);
         
-//        if (IsKeyPressed(KEY_UP))  { ZZ-=1; }
-//        if (IsKeyPressed(KEY_DOWN)) { ZZ+=1; }
-
         BeginDrawing();
         ClearBackground(DARKGRAY);
         BeginMode3D(camera);
@@ -916,8 +912,7 @@ int main______()
     return 0;
 }
 
-int main234234324234234234() {
-//int main() {
+int mainTestCamera() {
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
@@ -1049,7 +1044,7 @@ int main234234324234234234() {
 
 using namespace TD;
 
-int main(void)
+int mainTestBitmaps(void)
 {
     auto res = Resources(BasePath());
 
@@ -1072,16 +1067,15 @@ int main(void)
     gamePalette.copy(selColrPalette, 0x10);
     
     auto selectImage = GameImage(select, 320, gamePalette);
-    
-    
-    //    auto compass = res.file("COMPASS.LZ");
-    //    auto compassImage = GameImage(compass, 152, gamePalette);
+
+    auto compass = res.file("COMPASS.LZ");
+    auto compassImage = GameImage(compass, 152, gamePalette);
 
     auto detail1 = res.file("DETAIL1.LZ");
     auto detail2 = res.file("DETAIL2.LZ");
     
-//    auto detail1Image = GameImage(detail1, 0x161, gamePalette);
-//    auto detail2Image = GameImage(detail2, 0x15d, gamePalette);
+    auto detail1Image = GameImage(detail1, 0x161, gamePalette);
+    auto detail2Image = GameImage(detail2, 0x15d, gamePalette);
     
     auto otwcolbin = res.file("OTWCOL.BIN");
     
@@ -1100,8 +1094,7 @@ int main(void)
     auto carcol = PaletteFromData(car.col);
     auto carPalette = GamePalette();
     carPalette.copy(carcol, 0x10);
-    
-    
+
     auto topImage = GameImage(car.top, 320,   carPalette);
     auto bot1Image = GameImage(car.bot1, 320, carPalette);
     auto bot2Image = GameImage(car.bot2, 320, carPalette);
@@ -1119,10 +1112,6 @@ int main(void)
     auto sidImage = GameImage(car.sid, 112, scPalette);
     auto icnImage = GameImage(car.icn, 208, scPalette);
     
-    auto &scene = res.m_scenes[0];
-
-    int tileid = 0;
-
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
@@ -1159,102 +1148,34 @@ int main(void)
     selectImage.texture();
     bot1Image.texture();
     bot2Image.texture();
-    
-    Camera camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
 
-    SetCameraMode(camera, CAMERA_FIRST_PERSON);
-    
-    float XX = 0;
-    float ZZ = 0;
-    
-    int rot = 0;
-    
     while (!WindowShouldClose())
     {
-        if (0)
-        {
-        if (IsKeyPressed(KEY_RIGHT)) { XX+=1; }
-        if (IsKeyPressed(KEY_LEFT)) { XX-=1; }
-
-        if (IsKeyPressed(KEY_UP))  { ZZ-=1; }
-        if (IsKeyPressed(KEY_DOWN)) { ZZ+=1; }
-
-        if (IsKeyPressed(KEY_A))  { rot = (rot - 1) % 4; }
-        if (IsKeyPressed(KEY_D))  { rot = (rot + 1) % 4; }
-        }
-        
         BeginDrawing();
         {
             ClearBackground(::DARKGRAY);
 
-//            DrawTexture(checked, screenWidth/2 - checked.width/2, screenHeight/2 - checked.height/2, Fade(WHITE, 0.5f));
-
-
-            BeginMode3D(camera);
-            {
+            DrawTexture(selectImage.texture(),  20,  20, ::WHITE);
                 
-//                DrawGrid(10, 1.0f);        // Draw a grid
-            }
-/*
-            if (0)
-            {
-                DrawCube((Vector3){-4.0f, 0.0f, 2.0f}, 2.0f, 5.0f, 2.0f, RED);
-                DrawCubeWires((Vector3){-4.0f, 0.0f, 2.0f}, 2.0f, 5.0f, 2.0f, GOLD);
-                DrawCubeWires((Vector3){-4.0f, 0.0f, -2.0f}, 3.0f, 6.0f, 2.0f, MAROON);
-
-                DrawSphere((Vector3){-1.0f, 0.0f, -2.0f}, 1.0f, GREEN);
-                DrawSphereWires((Vector3){1.0f, 0.0f, 2.0f}, 2.0f, 16, 16, LIME);
-
-                DrawCylinder((Vector3){4.0f, 0.0f, -2.0f}, 1.0f, 2.0f, 3.0f, 4, SKYBLUE);
-                DrawCylinderWires((Vector3){4.0f, 0.0f, -2.0f}, 1.0f, 2.0f, 3.0f, 4, DARKBLUE);
-                DrawCylinderWires((Vector3){4.5f, -1.0f, 2.0f}, 1.0f, 1.0f, 2.0f, 6, BROWN);
-
-                DrawCylinder((Vector3){1.0f, 0.0f, -4.0f}, 0.0f, 1.5f, 3.0f, 8, GOLD);
-                DrawCylinderWires((Vector3){1.0f, 0.0f, -4.0f}, 0.0f, 1.5f, 3.0f, 8, PINK);
-
-//                DrawGrid(10, 1.0f);        // Draw a grid
+            DrawTexture(topImage.texture(),    400,  20, ::WHITE);
+            DrawTexture(bot1Image.texture(),   400,  60, ::WHITE);
+            DrawTexture(bot2Image.texture(),   400, 120, ::WHITE);
+            DrawTexture(lbotImage.texture(),   400, 180, ::WHITE);
+            DrawTexture(rbotImage.texture(),   600, 180, ::WHITE);
+            DrawTexture(etcImage.texture(),    400, 250, ::WHITE);
                 
-            }
- */
-            EndMode3D();
+            DrawTexture(carsicImage.texture(),  20, 270, ::WHITE);
+                
+            DrawTexture(fl1Image.texture(),     20, 340, ::WHITE);
+            DrawTexture(fl2Image.texture(),    260, 340, ::WHITE);
+                
+            DrawTexture(bicImage.texture(),    670, 340, ::WHITE);
+            DrawTexture(sidImage.texture(),    550, 340, ::WHITE);
+            DrawTexture(icnImage.texture(),    550, 490, ::WHITE);
 
-
-                DrawTexture(selectImage.texture(),  20,  20, ::WHITE);
-                
-                DrawTexture(topImage.texture(),    400,  20, ::WHITE);
-                DrawTexture(bot1Image.texture(),   400,  60, ::WHITE);
-                DrawTexture(bot2Image.texture(),   400, 120, ::WHITE);
-                DrawTexture(lbotImage.texture(),   400, 180, ::WHITE);
-                DrawTexture(rbotImage.texture(),   600, 180, ::WHITE);
-                DrawTexture(etcImage.texture(),    400, 250, ::WHITE);
-                
-                DrawTexture(carsicImage.texture(),  20, 270, ::WHITE);
-                
-                DrawTexture(fl1Image.texture(),     20, 340, ::WHITE);
-                DrawTexture(fl2Image.texture(),    260, 340, ::WHITE);
-                
-                DrawTexture(bicImage.texture(),    670, 340, ::WHITE);
-                DrawTexture(sidImage.texture(),    550, 340, ::WHITE);
-                DrawTexture(icnImage.texture(),    550, 490, ::WHITE);
-
-            /*
-            DrawTexture(detail1Image.texture(), 20, 300, WHITE);
-            DrawTexture(detail2Image.texture(), 20, 350, WHITE);
-            DrawTexture(compassImage.texture(), 400, 160, WHITE);
-            */
-            
-            /*
-            DrawText("CHECKED TEXTURE ", 84, 85, 30, BROWN);
-            DrawText("GENERATED by CODE", 72, 148, 30, BROWN);
-            DrawText("and RAW IMAGE LOADING", 46, 210, 30, BROWN);
-             */
-            
-            DrawText("(c) Fudesumi sprite by Eiden Marsal", 310, screenHeight - 20, 10, ::BROWN);
+//            DrawTexture(detail1Image.texture(), 20, 300, ::WHITE);
+//            DrawTexture(detail2Image.texture(), 20, 350, ::WHITE);
+            DrawTexture(compassImage.texture(), 0, 0, ::WHITE);
         }
         
         EndDrawing();
@@ -1269,3 +1190,13 @@ int main(void)
     return 0;
 }
 
+#pragma mark - Main
+
+int main() {
+//    mainTestCamera();
+
+//    mainTestBarfs();
+    mainTestBitmaps();
+//    mainModelExplorer();
+//    mainTilesExplorer();
+}
