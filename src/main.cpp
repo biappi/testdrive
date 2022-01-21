@@ -480,14 +480,27 @@ int mainTestCamera() {
 namespace TD {
 
 struct CarImages {
-    CarImages(const Car &car, const GamePalette &carPalette)
-        : top (car.top,  320, carPalette)
+    CarImages(const Car &car)
+        : carsicPalette(car.sicbin, 0x40)
+        , carPalette(car.col, 0x10)
+        , scPalette(car.sc, 0x10)
+        , top (car.top,  320, carPalette)
         , bot1(car.bot1, 320, carPalette)
         , bot2(car.bot2, 320, carPalette)
         , lbot(car.lbot, 168, carPalette)
         , rbot(car.rbot, 168, carPalette)
         , etc (car.etc,   56, carPalette)
+        , sic (car.sic, 0x48, carsicPalette)
+        , fl1 (car.fl1,  208, scPalette)
+        , fl2 (car.fl2,  208, scPalette)
+        , bic (car.bic,  112, scPalette)
+        , sid (car.sid,  112, scPalette)
+        , icn (car.icn,  208, scPalette)
     { }
+
+    const GamePalette carsicPalette;
+    const GamePalette carPalette;
+    const GamePalette scPalette;
 
     GameImage top;
     GameImage bot1;
@@ -495,17 +508,7 @@ struct CarImages {
     GameImage lbot;
     GameImage rbot;
     GameImage etc;
-};
-
-struct CarSCImages {
-    CarSCImages(const Car &car, const GamePalette &scPalette)
-        : fl1(car.fl1, 208, scPalette)
-        , fl2(car.fl2, 208, scPalette)
-        , bic(car.bic, 112, scPalette)
-        , sid(car.sid, 112, scPalette)
-        , icn(car.icn, 208, scPalette)
-    { }
-
+    GameImage sic;
     GameImage fl1;
     GameImage fl2;
     GameImage bic;
@@ -531,7 +534,7 @@ int mainTestBitmaps(void)
 
     auto otwcolbin = res.file("OTWCOL.BIN");
 
-    auto gamePalette = GamePaletteFromData(selclr, 0x10);
+    auto gamePalette = GamePalette(selclr, 0x10);
     auto selectImage = GameImage(select, 320, gamePalette);
 
     auto compass = res.file("COMPASS.LZ");
@@ -539,34 +542,31 @@ int mainTestBitmaps(void)
 
     auto detail1 = res.file("DETAIL1.LZ");
     auto detail2 = res.file("DETAIL2.LZ");
-    
+
     auto detail1Image = GameImage(detail1, 0x161, gamePalette);
     auto detail2Image = GameImage(detail2, 0x15d, gamePalette);
 
     auto &car = res.cars()[2];
 
-    auto carsicPalette = GamePaletteFromData(car.sicbin, 0x40);
-    auto carPalette = GamePaletteFromData(car.col, 0x10);
-    auto scPalette = GamePaletteFromData(car.sc, 0x10);
-
-    auto carsicImage = GameImage(car.sic, 0x48, carsicPalette);
-
-    auto carImages = CarImages(car, carPalette);
-    auto scImages = CarSCImages(car, scPalette);
+    auto carImages = CarImages(car);
 
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
-  
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
         {
             ClearBackground(::DARKGRAY);
 
-            DrawTexture(selectImage.texture(),  20,  20, ::WHITE);
-                
+            DrawTexture(selectImage.texture(),       20,  20, ::WHITE);
+            DrawTexture(detail1Image.texture(),      20, 300, ::WHITE);
+            DrawTexture(detail2Image.texture(),      20, 350, ::WHITE);
+            DrawTexture(compassImage.texture(),         0, 0, ::WHITE);
+
+            DrawTexture(carImages.sic.texture(),     20, 270, ::WHITE);
             DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);
             DrawTexture(carImages.bot1.texture(),   400,  60, ::WHITE);
             DrawTexture(carImages.bot2.texture(),   400, 120, ::WHITE);
@@ -574,18 +574,13 @@ int mainTestBitmaps(void)
             DrawTexture(carImages.rbot.texture(),   600, 180, ::WHITE);
             DrawTexture(carImages.etc.texture(),    400, 250, ::WHITE);
                 
-            DrawTexture(carsicImage.texture(),  20, 270, ::WHITE);
-                
-            DrawTexture(scImages.fl1.texture(),     20, 340, ::WHITE);
-            DrawTexture(scImages.fl2.texture(),    260, 340, ::WHITE);
+            DrawTexture(carImages.fl1.texture(),      20, 340, ::WHITE);
+            DrawTexture(carImages.fl2.texture(),     260, 340, ::WHITE);
 
-            DrawTexture(scImages.bic.texture(),    670, 340, ::WHITE);
-            DrawTexture(scImages.sid.texture(),    550, 340, ::WHITE);
-            DrawTexture(scImages.icn.texture(),    550, 490, ::WHITE);
+            DrawTexture(carImages.bic.texture(),     670, 340, ::WHITE);
+            DrawTexture(carImages.sid.texture(),     550, 340, ::WHITE);
+            DrawTexture(carImages.icn.texture(),     550, 490, ::WHITE);
 
-//            DrawTexture(detail1Image.texture(), 20, 300, ::WHITE);
-//            DrawTexture(detail2Image.texture(), 20, 350, ::WHITE);
-            DrawTexture(compassImage.texture(), 0, 0, ::WHITE);
         }
         
         EndDrawing();

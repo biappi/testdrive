@@ -24,11 +24,28 @@ struct Color {
     uint8_t r, g, b, a;
 };
 
+std::vector<Color> PaletteFromData(const std::vector<std::byte> &data) {
+    auto count = data.size() / 3;
+    std::vector<Color> palette(count);
+
+    for (int i = 0; i < count; i++) {
+        palette[i].r = std::to_integer<uint8_t>(data[(i * 3) + 0]) << 2;
+        palette[i].g = std::to_integer<uint8_t>(data[(i * 3) + 1]) << 2;
+        palette[i].b = std::to_integer<uint8_t>(data[(i * 3) + 2]) << 2;
+        palette[i].a = 255;
+    }
+
+    return palette;
+}
+
 class GamePalette {
 public:
     std::vector<Color> palette;
 
     GamePalette();
+
+    GamePalette(const std::vector<std::byte> &data, int at);
+
     void copy(std::vector<Color> palette, int at);
 };
 
@@ -650,31 +667,18 @@ GamePalette::GamePalette()
     copy(DefaultPalette(), 0);
 }
 
+GamePalette::GamePalette(const std::vector<std::byte> &data, int at)
+    : palette(0x100)
+{
+    auto palette = PaletteFromData(data);
+    copy(DefaultPalette(), 0);
+    copy(palette, at);
+}
+
 void GamePalette::copy(std::vector<Color> src, int at) {
     for (int i = 0; i < src.size(); i++) {
         palette[at + i] = src[i];
     }
-}
-
-std::vector<Color> PaletteFromData(const std::vector<std::byte> &data) {
-    auto count = data.size() / 3;
-    std::vector<Color> palette(count);
-    
-    for (int i = 0; i < count; i++) {
-        palette[i].r = std::to_integer<uint8_t>(data[(i * 3) + 0]) << 2;
-        palette[i].g = std::to_integer<uint8_t>(data[(i * 3) + 1]) << 2;
-        palette[i].b = std::to_integer<uint8_t>(data[(i * 3) + 2]) << 2;
-        palette[i].a = 255;
-    }
-
-    return palette;
-}
-
-GamePalette GamePaletteFromData(const std::vector<std::byte> &data, int at) {
-    auto palette = PaletteFromData(data);
-    auto gamePalette = GamePalette();
-    gamePalette.copy(palette, at);
-    return gamePalette;
 }
 
 }
