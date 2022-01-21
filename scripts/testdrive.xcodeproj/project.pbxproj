@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3F92464F279A074500D97C72 /* libraylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F9C12E3279A03DA0065A259 /* libraylib.a */; };
 		3F9C12DE279A03A60065A259 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12D9279A03A60065A259 /* Resources.cpp */; };
 		3F9C12DF279A03A60065A259 /* Decoders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12DA279A03A60065A259 /* Decoders.cpp */; };
 		3F9C12E0279A03A60065A259 /* Models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F9C12DB279A03A60065A259 /* Models.cpp */; };
@@ -32,6 +31,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3F61B9AA279B24DB006CF0ED /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		3F61B9AC279B24DB006CF0ED /* rlgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rlgl.h; sourceTree = "<group>"; };
+		3F61B9AD279B24DB006CF0ED /* raymath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raymath.h; sourceTree = "<group>"; };
+		3F61B9AE279B24DB006CF0ED /* raygui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raygui.h; sourceTree = "<group>"; };
+		3F61B9AF279B24DB006CF0ED /* raylib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raylib.h; sourceTree = "<group>"; };
+		3F61B9B0279B24DB006CF0ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3F61B9B2279B24DB006CF0ED /* libraylib.4.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libraylib.4.0.0.dylib; sourceTree = "<group>"; };
+		3F61B9B3279B24DB006CF0ED /* libraylib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libraylib.a; sourceTree = "<group>"; };
+		3F61B9B4279B24DB006CF0ED /* libraylib.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libraylib.dylib; sourceTree = "<group>"; };
+		3F61B9B5279B24DB006CF0ED /* libraylib.400.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libraylib.400.dylib; sourceTree = "<group>"; };
 		3F650495279A035F00176995 /* testdrive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testdrive; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9C12D6279A03A60065A259 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		3F9C12D7279A03A60065A259 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resources.h; sourceTree = "<group>"; };
@@ -41,10 +50,6 @@
 		3F9C12DB279A03A60065A259 /* Models.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Models.cpp; sourceTree = "<group>"; };
 		3F9C12DC279A03A60065A259 /* Models.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Models.h; sourceTree = "<group>"; };
 		3F9C12DD279A03A60065A259 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		3F9C12E3279A03DA0065A259 /* libraylib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libraylib.a; sourceTree = "<group>"; };
-		3F9C12E4279A03DA0065A259 /* raymath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raymath.h; sourceTree = "<group>"; };
-		3F9C12E5279A03DA0065A259 /* raylib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raylib.h; sourceTree = "<group>"; };
-		3F9C12E7279A042A0065A259 /* rlgl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rlgl.h; sourceTree = "<group>"; };
 		3F9C12E9279A046F0065A259 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F9C12EB279A047F0065A259 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		3F9C12ED279A04900065A259 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -61,7 +66,6 @@
 				3F9C12F0279A04950065A259 /* AppKit.framework in Frameworks */,
 				3F9C12EE279A04900065A259 /* IOKit.framework in Frameworks */,
 				3F9C12EC279A047F0065A259 /* CoreGraphics.framework in Frameworks */,
-				3F92464F279A074500D97C72 /* libraylib.a in Frameworks */,
 				3F9C12EA279A046F0065A259 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,11 +73,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F61B9A9279B24DB006CF0ED /* raylib-4.0.0_macos */ = {
+			isa = PBXGroup;
+			children = (
+				3F61B9AA279B24DB006CF0ED /* LICENSE */,
+				3F61B9AB279B24DB006CF0ED /* include */,
+				3F61B9B0279B24DB006CF0ED /* README.md */,
+				3F61B9B1279B24DB006CF0ED /* lib */,
+			);
+			name = "raylib-4.0.0_macos";
+			path = "../vendor/raylib-4.0.0_macos";
+			sourceTree = "<group>";
+		};
+		3F61B9AB279B24DB006CF0ED /* include */ = {
+			isa = PBXGroup;
+			children = (
+				3F61B9AC279B24DB006CF0ED /* rlgl.h */,
+				3F61B9AD279B24DB006CF0ED /* raymath.h */,
+				3F61B9AE279B24DB006CF0ED /* raygui.h */,
+				3F61B9AF279B24DB006CF0ED /* raylib.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		3F61B9B1279B24DB006CF0ED /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				3F61B9B2279B24DB006CF0ED /* libraylib.4.0.0.dylib */,
+				3F61B9B3279B24DB006CF0ED /* libraylib.a */,
+				3F61B9B4279B24DB006CF0ED /* libraylib.dylib */,
+				3F61B9B5279B24DB006CF0ED /* libraylib.400.dylib */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
 		3F65048C279A035F00176995 = {
 			isa = PBXGroup;
 			children = (
 				3F9C12D5279A03A60065A259 /* src */,
-				3F9C12E2279A03DA0065A259 /* raylib_osx */,
+				3F61B9A9279B24DB006CF0ED /* raylib-4.0.0_macos */,
 				3F650496279A035F00176995 /* Products */,
 				3F9C12E8279A046F0065A259 /* Frameworks */,
 			);
@@ -101,18 +139,6 @@
 			);
 			name = src;
 			path = ../src;
-			sourceTree = "<group>";
-		};
-		3F9C12E2279A03DA0065A259 /* raylib_osx */ = {
-			isa = PBXGroup;
-			children = (
-				3F9C12E3279A03DA0065A259 /* libraylib.a */,
-				3F9C12E4279A03DA0065A259 /* raymath.h */,
-				3F9C12E5279A03DA0065A259 /* raylib.h */,
-				3F9C12E7279A042A0065A259 /* rlgl.h */,
-			);
-			name = raylib_osx;
-			path = ../vendor/raylib_osx;
 			sourceTree = "<group>";
 		};
 		3F9C12E8279A046F0065A259 /* Frameworks */ = {
@@ -311,10 +337,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XN7L7M4GQT;
 				ENABLE_HARDENED_RUNTIME = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/../vendor/raylib_osx",
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../vendor/raylib-4.0.0_macos/include";
+				OTHER_LDFLAGS = "$(PROJECT_DIR)/../vendor/raylib-4.0.0_macos/lib/libraylib.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -325,10 +349,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XN7L7M4GQT;
 				ENABLE_HARDENED_RUNTIME = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/../vendor/raylib_osx",
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../vendor/raylib-4.0.0_macos/include";
+				OTHER_LDFLAGS = "$(PROJECT_DIR)/../vendor/raylib-4.0.0_macos/lib/libraylib.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
