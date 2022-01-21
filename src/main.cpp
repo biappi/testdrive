@@ -97,10 +97,10 @@ void print_sprite_data(const TD::Model &model)
 }
 
 
-class DONTKNOWTHENAME {
+class SceneAssets {
 public:
-    DONTKNOWTHENAME(std::string path)
-        : m_resources(path)
+    SceneAssets(TD::Resources &resources)
+        : m_resources(resources)
     {
         loadOTW();
         loadGenericTiles();
@@ -111,14 +111,6 @@ public:
     TD::Scene& scene() {
         return m_resources.m_scenes[0];
     }
-
-    /*
-    void loadMeshes() {
-        for (auto &mesh : m_tile_meshes) {
-            mesh.load();
-        }
-    }
-     */
 
     const std::vector<TD::Model>& tileModels() {
         return m_tile_models;
@@ -172,7 +164,7 @@ private:
         }
     }
 
-    TD::Resources m_resources;
+    TD::Resources& m_resources;
     TD::GamePalette m_otwPalette { };
     std::vector<RayLibMesh> m_generic_tiles;
 
@@ -185,9 +177,9 @@ private:
 
 class ModelExplorer {
 public:
-    ModelExplorer(DONTKNOWTHENAME &game)
-        : m_game(game)
-        , m_explorer("MODELS EXPLORER", game.objectMeshes().size())
+    ModelExplorer(SceneAssets &assets)
+        : m_assets(assets)
+        , m_explorer("MODELS EXPLORER", assets.objectMeshes().size())
     {
         m_explorer.setScale(100);
         m_explorer.setCurrent(86);
@@ -195,7 +187,7 @@ public:
 
     void setup() {
         SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
-        printa(m_game.objectModels()[m_explorer.current()]);
+        printa(m_assets.objectModels()[m_explorer.current()]);
     }
 
     void loop() {
@@ -204,12 +196,12 @@ public:
         m_explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printa(m_game.objectModels()[meshNr]);
+            printa(m_assets.objectModels()[meshNr]);
         }
 
         m_explorer.beginDrawingObject();
 
-        DrawModelEx(m_game.objectMeshes()[meshNr]._model(),
+        DrawModelEx(m_assets.objectMeshes()[meshNr]._model(),
                     { 0 },
                     { 0, 1, 0 },
                     0,
@@ -219,27 +211,27 @@ public:
         m_explorer.endDrawingObject();
 
         char sucaminchia[100];
-        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, m_game.scene().m_objects[meshNr+4].flags());
+        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, m_assets.scene().m_objects[meshNr+4].flags());
         DrawText(sucaminchia, 30, 80, 20, BLUE);
 
         EndDrawing();
     }
 
 private:
-    DONTKNOWTHENAME &m_game;
+    SceneAssets &m_assets;
     Explorer m_explorer;
 };
 
 class TilesExplorer {
 public:
-    TilesExplorer(DONTKNOWTHENAME &game)
-        : m_game(game)
-        , m_explorer("TILES EXPLORER", game.tileMeshes().size())
+    TilesExplorer(SceneAssets &assets)
+        : m_assets(assets)
+        , m_explorer("TILES EXPLORER", assets.tileMeshes().size())
     { }
 
     void setup() {
         SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
-        printa(m_game.tileModels()[0]);
+        printa(m_assets.tileModels()[0]);
     }
 
     void loop() {
@@ -249,13 +241,13 @@ public:
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
             printf(" --- tile %zu ---\n", meshNr);
-            print_sprite_data(m_game.tileModels()[meshNr]);
+            print_sprite_data(m_assets.tileModels()[meshNr]);
         }
 
         BeginDrawing();
 
         m_explorer.beginDrawingObject();
-        for (auto &sprite : m_game.tileModels()[meshNr].sprites()) {
+        for (auto &sprite : m_assets.tileModels()[meshNr].sprites()) {
             Vector3 pos;
             pos.x =  ((int16_t) sprite.b) / 1024.;
             pos.y =  ((int16_t) sprite.d) / 4096.;
@@ -268,7 +260,7 @@ public:
         DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
         DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
 
-        DrawModel(m_game.tileMeshes()[meshNr]._model(),
+        DrawModel(m_assets.tileMeshes()[meshNr]._model(),
                   { 0 },
                   1,
                   ::WHITE);
@@ -279,7 +271,7 @@ public:
     }
 
 private:
-    DONTKNOWTHENAME &m_game;
+    SceneAssets &m_assets;
     Explorer m_explorer;
 };
 
@@ -299,9 +291,10 @@ enum Screens {
     SCREEN_TILES_EXPLORER,
 };
 
-int mainModelExplorer()
+int mainExplorers()
 {
-    auto game = DONTKNOWTHENAME(BasePath());
+    auto resources = TD::Resources(BasePath());
+    auto game = SceneAssets(resources);
     auto modelExplorer = ModelExplorer(game);
     auto tilesExplorer = TilesExplorer(game);
 
