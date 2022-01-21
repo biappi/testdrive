@@ -294,30 +294,16 @@ int mainTestBarfs()
     exit(0);
 }
 
-int mainTilesExplorer()
-{
-    auto game = DONTKNOWTHENAME(BasePath());
-    auto tilesExplorer = TilesExplorer(game);
-
-    SetTargetFPS(30);
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-
-    InitWindow(800, 600, "test");
-
-    rlDisableBackfaceCulling();
-    tilesExplorer.setup();
-
-    while (!WindowShouldClose()) {
-        tilesExplorer.loop();
-    }
-
-    return 0;
-}
+enum Screens {
+    SCREEN_MODEL_EXPLORER,
+    SCREEN_TILES_EXPLORER,
+};
 
 int mainModelExplorer()
 {
     auto game = DONTKNOWTHENAME(BasePath());
     auto modelExplorer = ModelExplorer(game);
+    auto tilesExplorer = TilesExplorer(game);
 
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -326,9 +312,26 @@ int mainModelExplorer()
 
     rlDisableBackfaceCulling();
     modelExplorer.setup();
+    tilesExplorer.setup();
+
+    auto currentScreen = SCREEN_MODEL_EXPLORER;
 
     while (!WindowShouldClose()) {
-        modelExplorer.loop();
+        if (IsKeyPressed(KEY_ONE))
+            currentScreen = SCREEN_MODEL_EXPLORER;
+
+        if (IsKeyPressed(KEY_TWO))
+            currentScreen = SCREEN_TILES_EXPLORER;
+
+        switch (currentScreen) {
+            case SCREEN_MODEL_EXPLORER:
+                modelExplorer.loop();
+                break;
+
+            case SCREEN_TILES_EXPLORER:
+                tilesExplorer.loop();
+                break;
+        }
     }
     
     return 0;
