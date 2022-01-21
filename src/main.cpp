@@ -275,6 +275,54 @@ private:
     Explorer m_explorer;
 };
 
+class BitmapTest {
+public:
+    BitmapTest(TD::Resources &resources)
+        : m_menuImages(resources)
+    {
+        for (auto& car : resources.cars()) {
+            m_carImages.emplace_back(car);
+        }
+    }
+
+    void setup() {
+    }
+
+    void loop() {
+        BeginDrawing();
+
+        ClearBackground(::DARKGRAY);
+
+        DrawTexture(m_menuImages.select.texture(),       20,  20, ::WHITE);
+        DrawTexture(m_menuImages.detail1.texture(),      20, 300, ::WHITE);
+        DrawTexture(m_menuImages.detail2.texture(),      20, 350, ::WHITE);
+        DrawTexture(m_menuImages.compass.texture(),         0, 0, ::WHITE);
+
+        auto& carImages = m_carImages[2];
+
+        DrawTexture(carImages.sic.texture(),     20, 270, ::WHITE);
+        DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);
+        DrawTexture(carImages.bot1.texture(),   400,  60, ::WHITE);
+        DrawTexture(carImages.bot2.texture(),   400, 120, ::WHITE);
+        DrawTexture(carImages.lbot.texture(),   400, 180, ::WHITE);
+        DrawTexture(carImages.rbot.texture(),   600, 180, ::WHITE);
+        DrawTexture(carImages.etc.texture(),    400, 250, ::WHITE);
+
+        DrawTexture(carImages.fl1.texture(),      20, 340, ::WHITE);
+        DrawTexture(carImages.fl2.texture(),     260, 340, ::WHITE);
+
+        DrawTexture(carImages.bic.texture(),     670, 340, ::WHITE);
+        DrawTexture(carImages.sid.texture(),     550, 340, ::WHITE);
+        DrawTexture(carImages.icn.texture(),     550, 490, ::WHITE);
+
+        EndDrawing();
+    }
+
+private:
+    TD::MenuImages m_menuImages;
+    std::vector<TD::CarImages> m_carImages;
+};
+
 #pragma mark - Main Functions
 
 int mainTestBarfs()
@@ -289,21 +337,30 @@ int mainTestBarfs()
 enum Screens {
     SCREEN_MODEL_EXPLORER,
     SCREEN_TILES_EXPLORER,
+    SCREEN_BITMAP_TEST,
 };
 
 int mainExplorers()
 {
+    const int multiplicator = 3;
+
+    const int screenWidth = TD3ScreenSizeWidth * multiplicator;
+    const int screenHeight = TD3ScreenSizeHeight * multiplicator;
+
     auto resources = TD::Resources(BasePath());
-    auto game = SceneAssets(resources);
-    auto modelExplorer = ModelExplorer(game);
-    auto tilesExplorer = TilesExplorer(game);
+    auto assets = SceneAssets(resources);
+
+    auto bitmapTest = BitmapTest(resources);
+    auto modelExplorer = ModelExplorer(assets);
+    auto tilesExplorer = TilesExplorer(assets);
 
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
-    InitWindow(800, 600, "test");
+    InitWindow(screenWidth, screenHeight, "test");
 
     rlDisableBackfaceCulling();
+    bitmapTest.setup();
     modelExplorer.setup();
     tilesExplorer.setup();
 
@@ -316,6 +373,9 @@ int mainExplorers()
         if (IsKeyPressed(KEY_TWO))
             currentScreen = SCREEN_TILES_EXPLORER;
 
+        if (IsKeyPressed(KEY_THREE))
+            currentScreen = SCREEN_BITMAP_TEST;
+
         switch (currentScreen) {
             case SCREEN_MODEL_EXPLORER:
                 modelExplorer.loop();
@@ -323,6 +383,10 @@ int mainExplorers()
 
             case SCREEN_TILES_EXPLORER:
                 tilesExplorer.loop();
+                break;
+
+            case SCREEN_BITMAP_TEST:
+                bitmapTest.loop();
                 break;
         }
     }
@@ -477,70 +541,11 @@ int mainTestCamera() {
     return 0;
 }
 
-using namespace TD;
-
-int mainTestBitmaps(void)
-{
-    auto res = Resources(BasePath());
-
-    const int multiplicator = 3;
-    
-    const int screenWidth = TD3ScreenSizeWidth * multiplicator;
-    const int screenHeight = TD3ScreenSizeHeight * multiplicator;
-
-    auto menuImages = MenuImages(res);
-
-    auto &car = res.cars()[2];
-    auto carImages = CarImages(car);
-
-    SetTargetFPS(30);
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    
-    InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
-
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        {
-            ClearBackground(::DARKGRAY);
-
-            DrawTexture(menuImages.select.texture(),       20,  20, ::WHITE);
-            DrawTexture(menuImages.detail1.texture(),      20, 300, ::WHITE);
-            DrawTexture(menuImages.detail2.texture(),      20, 350, ::WHITE);
-            DrawTexture(menuImages.compass.texture(),         0, 0, ::WHITE);
-
-            DrawTexture(carImages.sic.texture(),     20, 270, ::WHITE);
-            DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);
-            DrawTexture(carImages.bot1.texture(),   400,  60, ::WHITE);
-            DrawTexture(carImages.bot2.texture(),   400, 120, ::WHITE);
-            DrawTexture(carImages.lbot.texture(),   400, 180, ::WHITE);
-            DrawTexture(carImages.rbot.texture(),   600, 180, ::WHITE);
-            DrawTexture(carImages.etc.texture(),    400, 250, ::WHITE);
-                
-            DrawTexture(carImages.fl1.texture(),      20, 340, ::WHITE);
-            DrawTexture(carImages.fl2.texture(),     260, 340, ::WHITE);
-
-            DrawTexture(carImages.bic.texture(),     670, 340, ::WHITE);
-            DrawTexture(carImages.sid.texture(),     550, 340, ::WHITE);
-            DrawTexture(carImages.icn.texture(),     550, 490, ::WHITE);
-
-        }
-        
-        EndDrawing();
-    }
-
-    CloseWindow();
-
-    return 0;
-}
-
 #pragma mark - Main
 
 int main() {
-//    mainTestCamera();
+    mainExplorers();
 
+//    mainTestCamera();
 //    mainTestBarfs();
-    mainTestBitmaps();
-//    mainModelExplorer();
-//    mainTilesExplorer();
 }
