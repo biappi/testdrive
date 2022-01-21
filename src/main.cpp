@@ -183,6 +183,53 @@ private:
     std::vector<RayLibMesh> m_object_meshes;
 };
 
+class ModelExplorer {
+public:
+    ModelExplorer(DONTKNOWTHENAME &game)
+        : m_game(game)
+        , m_explorer("MODELS EXPLORER", game.objectMeshes().size())
+    {
+        m_explorer.setScale(100);
+        m_explorer.setCurrent(86);
+    }
+
+    void setup() {
+        SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
+        printa(m_game.objectModels()[m_explorer.current()]);
+    }
+
+    void loop() {
+        auto meshNr = m_explorer.current();
+
+        m_explorer.checkInput();
+
+        if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
+            printa(m_game.objectModels()[meshNr]);
+        }
+
+        m_explorer.beginDrawingObject();
+
+        DrawModelEx(m_game.objectMeshes()[meshNr]._model(),
+                    { 0 },
+                    { 0, 1, 0 },
+                    0,
+                    { 1, 1, 1 },
+                    ::WHITE);
+
+        m_explorer.endDrawingObject();
+
+        char sucaminchia[100];
+        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, m_game.scene().m_objects[meshNr+4].flags());
+        DrawText(sucaminchia, 30, 80, 20, BLUE);
+
+        EndDrawing();
+    }
+
+private:
+    DONTKNOWTHENAME &m_game;
+    Explorer m_explorer;
+};
+
 #pragma mark - Main Functions
 
 int mainTestBarfs()
@@ -255,48 +302,18 @@ int mainTilesExplorer()
 int mainModelExplorer()
 {
     auto game = DONTKNOWTHENAME(BasePath());
+    auto modelExplorer = ModelExplorer(game);
 
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
     InitWindow(800, 600, "test");
 
-    auto explorer = Explorer("MODELS EXPLORER", game.objectMeshes().size());
-
-    explorer.setScale(100);
-    explorer.setCurrent(86);
-
-    SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
     rlDisableBackfaceCulling();
+    modelExplorer.setup();
 
-    printa(game.objectModels()[explorer.current()]);
-    
     while (!WindowShouldClose()) {
-
-        auto meshNr = explorer.current();
-
-        explorer.checkInput();
-
-        if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printa(game.objectModels()[meshNr]);
-        }
-
-        explorer.beginDrawingObject();
-
-        DrawModelEx(game.objectMeshes()[meshNr]._model(),
-                    { 0 },
-                    { 0, 1, 0 },
-                    0,
-                    { 1, 1, 1 },
-                    ::WHITE);
-
-        explorer.endDrawingObject();
-
-        char sucaminchia[100];
-        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, game.scene().m_objects[meshNr+4].flags());
-        DrawText(sucaminchia, 30, 80, 20, BLUE);
-        
-        EndDrawing();
+        modelExplorer.loop();
     }
     
     return 0;
