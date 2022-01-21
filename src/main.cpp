@@ -5,11 +5,13 @@
 //  Created by Antonio Malara on 11/10/2020.
 //
 
-#include "../vendor/raylib_osx/raylib.h"
-#include "../vendor/raylib_osx/rlgl.h"
-#include "main.h"
+#include <raylib.h>
+#include <rlgl.h>
 
+#include <cmath>
 #include <utility>
+
+#include "main.h"
 
 /*
  
@@ -73,7 +75,7 @@ GameImage::GameImage(const std::vector<std::byte> &imageLz, int width, GamePalet
         .width = width,
         .height = height,
         .mipmaps = 1,
-        .format = UNCOMPRESSED_R8G8B8A8,
+        .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
     };
 }
 
@@ -169,8 +171,8 @@ public:
         
         if (m_mesh.triangleCount == 0)
             return;
-        
-        rlLoadMesh(&m_mesh, false);
+
+        UploadMesh(&m_mesh, false);
         m_model = LoadModelFromMesh(m_mesh);
         m_loaded = true;
     }
@@ -741,7 +743,7 @@ int main_______34534()
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
-    camera.type = CAMERA_PERSPECTIVE;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     SetCameraMode(camera, CAMERA_PERSPECTIVE);
     rlDisableBackfaceCulling();
@@ -855,7 +857,7 @@ int main______()
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
-    camera.type = CAMERA_PERSPECTIVE;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     SetCameraMode(camera, CAMERA_PERSPECTIVE);
     rlDisableBackfaceCulling();
@@ -933,7 +935,7 @@ int main234234324234234234() {
     
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
-    camera.type = CAMERA_PERSPECTIVE;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     auto res = TD::Resources(BasePath());
     
@@ -1148,7 +1150,7 @@ int main(void)
         .width = width,
         .height = height,
         .mipmaps = 1,
-        .format = UNCOMPRESSED_R8G8B8A8,
+        .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
     };
     
     Texture2D checked = LoadTextureFromImage(checkedIm);
@@ -1163,7 +1165,7 @@ int main(void)
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
-    camera.type = CAMERA_PERSPECTIVE;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
     
