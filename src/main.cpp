@@ -477,6 +477,44 @@ int mainTestCamera() {
     return 0;
 }
 
+namespace TD {
+
+struct CarImages {
+    CarImages(const Car &car, const GamePalette &carPalette)
+        : top (car.top,  320, carPalette)
+        , bot1(car.bot1, 320, carPalette)
+        , bot2(car.bot2, 320, carPalette)
+        , lbot(car.lbot, 168, carPalette)
+        , rbot(car.rbot, 168, carPalette)
+        , etc (car.etc,   56, carPalette)
+    { }
+
+    GameImage top;
+    GameImage bot1;
+    GameImage bot2;
+    GameImage lbot;
+    GameImage rbot;
+    GameImage etc;
+};
+
+struct CarSCImages {
+    CarSCImages(const Car &car, const GamePalette &scPalette)
+        : fl1(car.fl1, 208, scPalette)
+        , fl2(car.fl2, 208, scPalette)
+        , bic(car.bic, 112, scPalette)
+        , sid(car.sid, 112, scPalette)
+        , icn(car.icn, 208, scPalette)
+    { }
+
+    GameImage fl1;
+    GameImage fl2;
+    GameImage bic;
+    GameImage sid;
+    GameImage icn;
+};
+
+};
+
 using namespace TD;
 
 int mainTestBitmaps(void)
@@ -526,35 +564,25 @@ int mainTestBitmaps(void)
     carsicPalette.copy(carsic, 0x40);
 
     auto carsicImage = GameImage(car.sic, 0x48, carsicPalette);
+
     auto carcol = PaletteFromData(car.col);
     auto carPalette = GamePalette();
     carPalette.copy(carcol, 0x10);
 
-    auto topImage = GameImage(car.top, 320,   carPalette);
-    auto bot1Image = GameImage(car.bot1, 320, carPalette);
-    auto bot2Image = GameImage(car.bot2, 320, carPalette);
-    auto lbotImage = GameImage(car.lbot, 168, carPalette);
-    auto rbotImage = GameImage(car.rbot, 168, carPalette);
-    auto etcImage = GameImage(car.etc, 56, carPalette);
+    auto carImages = CarImages(car, carPalette);
 
     auto sccol = PaletteFromData(car.sc);
     auto scPalette = GamePalette();
     scPalette.copy(sccol, 0x10);
-    
-    auto fl1Image = GameImage(car.fl1, 208, scPalette);
-    auto fl2Image = GameImage(car.fl2, 208, scPalette);
-    auto bicImage = GameImage(car.bic, 112, scPalette);
-    auto sidImage = GameImage(car.sid, 112, scPalette);
-    auto icnImage = GameImage(car.icn, 208, scPalette);
-    
+
+    auto scImages = CarSCImages(car, scPalette);
+
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
   
     selectImage.texture();
-    bot1Image.texture();
-    bot2Image.texture();
 
     while (!WindowShouldClose())
     {
@@ -564,21 +592,21 @@ int mainTestBitmaps(void)
 
             DrawTexture(selectImage.texture(),  20,  20, ::WHITE);
                 
-            DrawTexture(topImage.texture(),    400,  20, ::WHITE);
-            DrawTexture(bot1Image.texture(),   400,  60, ::WHITE);
-            DrawTexture(bot2Image.texture(),   400, 120, ::WHITE);
-            DrawTexture(lbotImage.texture(),   400, 180, ::WHITE);
-            DrawTexture(rbotImage.texture(),   600, 180, ::WHITE);
-            DrawTexture(etcImage.texture(),    400, 250, ::WHITE);
+            DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);
+            DrawTexture(carImages.bot1.texture(),   400,  60, ::WHITE);
+            DrawTexture(carImages.bot2.texture(),   400, 120, ::WHITE);
+            DrawTexture(carImages.lbot.texture(),   400, 180, ::WHITE);
+            DrawTexture(carImages.rbot.texture(),   600, 180, ::WHITE);
+            DrawTexture(carImages.etc.texture(),    400, 250, ::WHITE);
                 
             DrawTexture(carsicImage.texture(),  20, 270, ::WHITE);
                 
-            DrawTexture(fl1Image.texture(),     20, 340, ::WHITE);
-            DrawTexture(fl2Image.texture(),    260, 340, ::WHITE);
-                
-            DrawTexture(bicImage.texture(),    670, 340, ::WHITE);
-            DrawTexture(sidImage.texture(),    550, 340, ::WHITE);
-            DrawTexture(icnImage.texture(),    550, 490, ::WHITE);
+            DrawTexture(scImages.fl1.texture(),     20, 340, ::WHITE);
+            DrawTexture(scImages.fl2.texture(),    260, 340, ::WHITE);
+
+            DrawTexture(scImages.bic.texture(),    670, 340, ::WHITE);
+            DrawTexture(scImages.sid.texture(),    550, 340, ::WHITE);
+            DrawTexture(scImages.icn.texture(),    550, 490, ::WHITE);
 
 //            DrawTexture(detail1Image.texture(), 20, 300, ::WHITE);
 //            DrawTexture(detail2Image.texture(), 20, 350, ::WHITE);

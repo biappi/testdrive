@@ -11,7 +11,7 @@ namespace TD {
 
 class GameImage {
 public:
-    GameImage(const std::vector<std::byte> &imageLz, int width, GamePalette &palette, int colorBase = 0)
+    GameImage(const std::vector<std::byte> &imageLz, int width, const GamePalette &palette, int colorBase = 0)
         : m_textureLoaded(false)
     {
         auto decoded    = Decode(imageLz);
