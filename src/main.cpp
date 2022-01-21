@@ -230,6 +230,59 @@ private:
     Explorer m_explorer;
 };
 
+class TilesExplorer {
+public:
+    TilesExplorer(DONTKNOWTHENAME &game)
+        : m_game(game)
+        , m_explorer("TILES EXPLORER", game.tileMeshes().size())
+    { }
+
+    void setup() {
+        SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
+        printa(m_game.tileModels()[0]);
+    }
+
+    void loop() {
+        auto meshNr = m_explorer.current();
+
+        m_explorer.checkInput();
+
+        if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
+            printf(" --- tile %zu ---\n", meshNr);
+            print_sprite_data(m_game.tileModels()[meshNr]);
+        }
+
+        BeginDrawing();
+
+        m_explorer.beginDrawingObject();
+        for (auto &sprite : m_game.tileModels()[meshNr].sprites()) {
+            Vector3 pos;
+            pos.x =  ((int16_t) sprite.b) / 1024.;
+            pos.y =  ((int16_t) sprite.d) / 4096.;
+            pos.z = -((int16_t) sprite.c) / 1024.;
+
+            DrawCylinder(pos, 0.001, 0.001, .2, 16, RED);
+            DrawSphere( pos, 0.01, VIOLET);
+        }
+
+        DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
+        DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
+
+        DrawModel(m_game.tileMeshes()[meshNr]._model(),
+                  { 0 },
+                  1,
+                  ::WHITE);
+
+        m_explorer.endDrawingObject();
+
+        EndDrawing();
+    }
+
+private:
+    DONTKNOWTHENAME &m_game;
+    Explorer m_explorer;
+};
+
 #pragma mark - Main Functions
 
 int mainTestBarfs()
@@ -243,59 +296,21 @@ int mainTestBarfs()
 
 int mainTilesExplorer()
 {
+    auto game = DONTKNOWTHENAME(BasePath());
+    auto tilesExplorer = TilesExplorer(game);
+
     SetTargetFPS(30);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    
+
     InitWindow(800, 600, "test");
 
-    auto game = DONTKNOWTHENAME(BasePath());
-
-    Explorer explorer("TILES EXPLORER", game.tileMeshes().size());
-
-    SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
-
     rlDisableBackfaceCulling();
+    tilesExplorer.setup();
 
-    printa(game.tileModels()[0]);
-    
     while (!WindowShouldClose()) {
-
-        auto meshNr = explorer.current();
-
-        explorer.checkInput();
-
-        if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printf(" --- tile %zu ---\n", meshNr);
-            print_sprite_data(game.tileModels()[meshNr]);
-        }
-
-        BeginDrawing();
-
-        explorer.beginDrawingObject();
-
-        for (auto &sprite : game.tileModels()[meshNr].sprites()) {
-            Vector3 pos;
-            pos.x =  ((int16_t) sprite.b) / 1024.;
-            pos.y =  ((int16_t) sprite.d) / 4096.;
-            pos.z = -((int16_t) sprite.c) / 1024.;
-
-            DrawCylinder(pos, 0.001, 0.001, .2, 16, RED);
-            DrawSphere( pos, 0.01, VIOLET);
-        }
-
-        DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
-        DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
-
-        DrawModel(game.tileMeshes()[meshNr]._model(),
-                  { 0 },
-                  1,
-                  ::WHITE);
-
-        explorer.endDrawingObject();
-
-        EndDrawing();
+        tilesExplorer.loop();
     }
-    
+
     return 0;
 }
 
