@@ -98,6 +98,89 @@ void print_sprite_data(TD::Model &model)
     printf("\n");
 }
 
+#pragma mark - Explorer
+
+class Explorer {
+public:
+    Explorer(std::string title, size_t size)
+        : m_title(title)
+        , m_size(size)
+    { }
+
+    const Camera& camera() const {
+        return m_camera;
+    }
+
+    void checkInput() {
+        if (IsKeyPressed(KEY_RIGHT)) {
+            m_current = max(0, min(m_current + 1, m_size - 1));
+        }
+
+        if (IsKeyPressed(KEY_LEFT))  {
+            m_current = max(0, min(m_current - 1, m_size - 1));
+        }
+    }
+
+    size_t current() const {
+        return m_current;
+    }
+
+    void setCurrent(size_t value) {
+        m_current = value;
+    }
+
+    int scale() const {
+        return m_scale;
+    }
+
+    void setScale(int value) {
+        m_scale = value;
+    }
+
+    void drawTitle() {
+        char sucaminchia[100];
+        snprintf(sucaminchia, 100, "%03lu of %03lu", m_current, m_size);
+
+        DrawText(m_title.c_str(), 30, 30, 30, BLUE);
+        DrawText(sucaminchia, 30, 60, 20, BLUE);
+    }
+
+    void beginDrawingObject() {
+        ClearBackground(DARKGRAY);
+        BeginMode3D(m_camera);
+
+        DrawGrid(15, 1.0f);
+        rlPushMatrix();
+
+        rlScalef(m_scale, m_scale, m_scale);
+        rlRotatef(m_rotation++, 0, 1, 0);
+    }
+
+    void endDrawingObject() {
+        rlPopMatrix();
+        EndMode3D();
+
+        drawTitle();
+    }
+
+private:
+    std::string m_title;
+    size_t m_size;
+
+    size_t m_current = 0;
+    int m_rotation = 0;
+    int m_scale = 10;
+
+    Camera m_camera = {
+        .position = (Vector3){ 0.0f, 5.0f, 10.0f },
+        .target = (Vector3){ 0.0f, 0.0f, 0.0f },
+        .up = (Vector3){ 0.0f, 1.0f, 0.0f },
+        .fovy = 45.0f,
+        .projection = CAMERA_PERSPECTIVE,
+    };
+
+};
+
 #pragma mark - Main Functions
 
 int mainTestBarfs()
@@ -141,79 +224,49 @@ int mainTilesExplorer()
     
     // assert(all_tiles.size() == all_tiles_models.size());
 
-    Camera camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 5.0f, 10.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    Explorer explorer("TILES EXPLORER", all_tiles.size());
 
-    SetCameraMode(camera, CAMERA_PERSPECTIVE);
+    SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
+
     rlDisableBackfaceCulling();
-    
-    int i = 0;
-    size_t meshNr = 0;
-    int scale = 10;
-    
-    printa(all_tiles_models[meshNr]);
+
+    printa(all_tiles_models[0]);
     
     while (!WindowShouldClose()) {
-        
-        if (IsKeyPressed(KEY_RIGHT)) {
-            meshNr = max(0, min(meshNr + 1, all_tiles.size() - 1));
-        }
-        
-        if (IsKeyPressed(KEY_LEFT))  {
-            meshNr = max(0, min(meshNr - 1, all_tiles.size() - 1));
-        }
+
+        auto meshNr = explorer.current();
+
+        explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
             printf(" --- tile %zu ---\n", meshNr);
             print_sprite_data(all_tiles_models[meshNr]);
         }
-        
+
         BeginDrawing();
-        ClearBackground(DARKGRAY);
-        BeginMode3D(camera);
 
-        DrawGrid(15, 1.0f);
+        explorer.beginDrawingObject();
 
-        rlPushMatrix();
-        {
-            rlScalef(scale, scale, scale);
-            rlRotatef(i++, 0, 1, 0);
-            
-            for (auto &sprite : all_tiles_models[meshNr].sprites()) {
-                Vector3 pos;
-                pos.x =  ((int16_t) sprite.b) / 1024.;
-                pos.y =  ((int16_t) sprite.d) / 4096.;
-                pos.z = -((int16_t) sprite.c) / 1024.;
-                
-                DrawCylinder(pos, 0.001, 0.001, .2, 16, RED);
-                DrawSphere( pos, 0.01, VIOLET);
-            }
-            
-            DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
-            DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
-            
-            DrawModel(all_tiles[meshNr]._model(),
-                      { 0 },
-                      1,
-                      ::WHITE);
+        for (auto &sprite : all_tiles_models[meshNr].sprites()) {
+            Vector3 pos;
+            pos.x =  ((int16_t) sprite.b) / 1024.;
+            pos.y =  ((int16_t) sprite.d) / 4096.;
+            pos.z = -((int16_t) sprite.c) / 1024.;
+
+            DrawCylinder(pos, 0.001, 0.001, .2, 16, RED);
+            DrawSphere( pos, 0.01, VIOLET);
         }
-        rlPopMatrix();
 
-        EndMode3D();
-        
-        char sucaminchia[100];
-        snprintf(sucaminchia, 100, "%03lu of %03lu", meshNr, all_tiles.size());
-        
-        DrawText("MODEL EXPLORER", 30, 30, 30, BLUE);
-        DrawText(sucaminchia, 30, 60, 20, BLUE);
+        DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
+        DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
 
-//        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, scene.m_objects[meshNr+4].flags());
-//        DrawText(sucaminchia, 30, 80, 20, BLUE);
-        
+        DrawModel(all_tiles[meshNr]._model(),
+                  { 0 },
+                  1,
+                  ::WHITE);
+
+        explorer.endDrawingObject();
+
         EndDrawing();
     }
     
@@ -252,58 +305,39 @@ int mainModelExplorer()
     
     InitWindow(800, 600, "test");
 
-    Camera camera = { 0 };
-        camera.position = (Vector3){ 0.0f, 5.0f, 10.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    auto explorer = Explorer("MODELS EXPLORER", meshes.size());
 
-    SetCameraMode(camera, CAMERA_PERSPECTIVE);
+    explorer.setScale(100);
+    explorer.setCurrent(86);
+
+    SetCameraMode(explorer.camera(), CAMERA_PERSPECTIVE);
     rlDisableBackfaceCulling();
-    
-    int i = 0;
-    size_t meshNr = 86;
-    int scale = 100;
-    
-    printa(*models[meshNr]);
+
+    printa(*models[explorer.current()]);
     
     while (!WindowShouldClose()) {
-        
-        if (IsKeyPressed(KEY_RIGHT)) { meshNr++; }
-        if (IsKeyPressed(KEY_LEFT))  { meshNr--; }
+
+        auto meshNr = explorer.current();
+
+        explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
             printa(*models[meshNr]);
         }
-        
-        meshNr = min(max(meshNr, 0), meshes.size() - 1);
-        
-        BeginDrawing();
-        ClearBackground(DARKGRAY);
-        BeginMode3D(camera);
 
-        DrawGrid(15, 1.0f);
-
-        Vector3 scaleVector;
-        scaleVector.x = scaleVector.y = scaleVector.z = scale;
+        explorer.beginDrawingObject();
 
         auto &model = meshes[meshNr]->_model();
         DrawModelEx(model,
                     { 0 },
                     { 0, 1, 0 },
-                    i++,
-                    scaleVector,
+                    0,
+                    { 1, 1, 1 },
                     ::WHITE);
 
-        EndMode3D();
-        
-        char sucaminchia[100];
-        snprintf(sucaminchia, 100, "%03lu of %03lu", meshNr, meshes.size());
-        
-        DrawText("MODEL EXPLORER", 30, 30, 30, BLUE);
-        DrawText(sucaminchia, 30, 60, 20, BLUE);
+        explorer.endDrawingObject();
 
+        char sucaminchia[100];
         snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, scene.m_objects[meshNr+4].flags());
         DrawText(sucaminchia, 30, 80, 20, BLUE);
         
