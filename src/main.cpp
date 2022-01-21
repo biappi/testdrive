@@ -16,6 +16,7 @@
 #include "RaylibMesh.h"
 #include "GameImage.h"
 #include "Explorer.h"
+#include "Images.h"
 
 /*
  
@@ -95,7 +96,6 @@ void print_sprite_data(const TD::Model &model)
     
     printf("\n");
 }
-
 
 class SceneAssets {
 public:
@@ -477,47 +477,6 @@ int mainTestCamera() {
     return 0;
 }
 
-namespace TD {
-
-struct CarImages {
-    CarImages(const Car &car)
-        : carsicPalette(car.sicbin, 0x40)
-        , carPalette(car.col, 0x10)
-        , scPalette(car.sc, 0x10)
-        , top (car.top,  320, carPalette)
-        , bot1(car.bot1, 320, carPalette)
-        , bot2(car.bot2, 320, carPalette)
-        , lbot(car.lbot, 168, carPalette)
-        , rbot(car.rbot, 168, carPalette)
-        , etc (car.etc,   56, carPalette)
-        , sic (car.sic, 0x48, carsicPalette)
-        , fl1 (car.fl1,  208, scPalette)
-        , fl2 (car.fl2,  208, scPalette)
-        , bic (car.bic,  112, scPalette)
-        , sid (car.sid,  112, scPalette)
-        , icn (car.icn,  208, scPalette)
-    { }
-
-    const GamePalette carsicPalette;
-    const GamePalette carPalette;
-    const GamePalette scPalette;
-
-    GameImage top;
-    GameImage bot1;
-    GameImage bot2;
-    GameImage lbot;
-    GameImage rbot;
-    GameImage etc;
-    GameImage sic;
-    GameImage fl1;
-    GameImage fl2;
-    GameImage bic;
-    GameImage sid;
-    GameImage icn;
-};
-
-};
-
 using namespace TD;
 
 int mainTestBitmaps(void)
@@ -529,25 +488,9 @@ int mainTestBitmaps(void)
     const int screenWidth = TD3ScreenSizeWidth * multiplicator;
     const int screenHeight = TD3ScreenSizeHeight * multiplicator;
 
-    auto selclr = res.file("SELCOLR.BIN");
-    auto select = res.file("SELECT.LZ");
-
-    auto otwcolbin = res.file("OTWCOL.BIN");
-
-    auto gamePalette = GamePalette(selclr, 0x10);
-    auto selectImage = GameImage(select, 320, gamePalette);
-
-    auto compass = res.file("COMPASS.LZ");
-    auto compassImage = GameImage(compass, 152, gamePalette);
-
-    auto detail1 = res.file("DETAIL1.LZ");
-    auto detail2 = res.file("DETAIL2.LZ");
-
-    auto detail1Image = GameImage(detail1, 0x161, gamePalette);
-    auto detail2Image = GameImage(detail2, 0x15d, gamePalette);
+    auto menuImages = MenuImages(res);
 
     auto &car = res.cars()[2];
-
     auto carImages = CarImages(car);
 
     SetTargetFPS(30);
@@ -561,10 +504,10 @@ int mainTestBitmaps(void)
         {
             ClearBackground(::DARKGRAY);
 
-            DrawTexture(selectImage.texture(),       20,  20, ::WHITE);
-            DrawTexture(detail1Image.texture(),      20, 300, ::WHITE);
-            DrawTexture(detail2Image.texture(),      20, 350, ::WHITE);
-            DrawTexture(compassImage.texture(),         0, 0, ::WHITE);
+            DrawTexture(menuImages.select.texture(),       20,  20, ::WHITE);
+            DrawTexture(menuImages.detail1.texture(),      20, 300, ::WHITE);
+            DrawTexture(menuImages.detail2.texture(),      20, 350, ::WHITE);
+            DrawTexture(menuImages.compass.texture(),         0, 0, ::WHITE);
 
             DrawTexture(carImages.sic.texture(),     20, 270, ::WHITE);
             DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);

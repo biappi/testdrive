@@ -35,6 +35,7 @@
 		3F12CC88279B3376001D4C9D /* RaylibMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RaylibMesh.h; sourceTree = "<group>"; };
 		3F12CC89279B33DF001D4C9D /* GameImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameImage.h; sourceTree = "<group>"; };
 		3F12CC8A279B3F6B001D4C9D /* Explorer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Explorer.h; sourceTree = "<group>"; };
+		3F12CC8B279B6964001D4C9D /* Images.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Images.h; sourceTree = "<group>"; };
 		3F61B9AA279B24DB006CF0ED /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3F61B9AC279B24DB006CF0ED /* rlgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rlgl.h; sourceTree = "<group>"; };
 		3F61B9AD279B24DB006CF0ED /* raymath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raymath.h; sourceTree = "<group>"; };
@@ -142,6 +143,7 @@
 				3F12CC87279B330F001D4C9D /* barfs.h */,
 				3F12CC88279B3376001D4C9D /* RaylibMesh.h */,
 				3F9C12DD279A03A60065A259 /* main.cpp */,
+				3F12CC8B279B6964001D4C9D /* Images.h */,
 				3F12CC8A279B3F6B001D4C9D /* Explorer.h */,
 				3F12CC89279B33DF001D4C9D /* GameImage.h */,
 			);
