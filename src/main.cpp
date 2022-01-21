@@ -552,34 +552,6 @@ int mainTestBitmaps(void)
     
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
   
-    // Generate a checked texture by code
-    int width = 960;
-    int height = 480;
-
-    // Dynamic memory allocation to store pixels data (Color type)
-    ::Color *pixels = (::Color *)malloc(width*height*sizeof(::Color));
-
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            if (((x/32+y/32)/1)%2 == 0) pixels[y*width + x] = ::ORANGE;
-            else pixels[y*width + x] = ::GOLD;
-        }
-    }
-
-    // Load pixels data into an image structure and create texture
-    Image checkedIm = {
-        .data = pixels,             // We can assign pixels directly to data
-        .width = width,
-        .height = height,
-        .mipmaps = 1,
-        .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-    };
-    
-    Texture2D checked = LoadTextureFromImage(checkedIm);
-    UnloadImage(checkedIm);
-    
     selectImage.texture();
     bot1Image.texture();
     bot2Image.texture();
@@ -616,10 +588,6 @@ int mainTestBitmaps(void)
         EndDrawing();
     }
 
-    UnloadTexture(checked);
-
-    selectImage.unloadTexture();
-    
     CloseWindow();
 
     return 0;
