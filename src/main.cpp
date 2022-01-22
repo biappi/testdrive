@@ -351,6 +351,126 @@ private:
     std::vector<TD::CarImages> m_carImages;
 };
 
+class CameraTest {
+public:
+    CameraTest(TD::Resources& res, TD::Scene& scene)
+        : m_scene(scene)
+        , m_otwPalette(res.file("OTWCOL.BIN"), 0x10)
+        , m_assets(res, m_otwPalette, m_scene)
+    {
+    }
+
+    void setup() {
+        SetCameraMode(m_camera, CAMERA_FIRST_PERSON);
+    }
+
+    void loop() {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (m_enableCamera) {
+                m_enableCamera = false;
+                ShowCursor();
+                EnableCursor();
+            }
+            else {
+                m_enableCamera = true;
+                HideCursor();
+                DisableCursor();
+            }
+        }
+
+        if (m_enableCamera) {
+            UpdateCamera(&m_camera);
+            m_camera.position.y = ((0x130 / 4096.f) );
+        }
+
+        BeginDrawing();
+        ClearBackground(DARKGRAY);
+        BeginMode3D(m_camera);
+
+        for (int y = 0; y < TD::Scene::YTileCount; y++) {
+            for (int x = 0; x < TD::Scene::XTileCount; x++) {
+
+                auto tileinfo = m_scene.getTileInfo(x, y);
+                auto tileid = tileinfo.tileId();
+
+                auto &model = tileid < 0x40
+                    ? m_assets.genericTiles[tileid]
+                    : m_assets.tileMeshes[tileid - 0x40];
+
+                Vector3 position;
+                position.x = x;
+                position.y = tileinfo.height() / 4096.;
+                position.z = y;
+
+                DrawModelEx(model._model(),
+                            position,
+                            { 0, 1, 0 },
+                            -tileinfo.rot() * 90,
+                            { 1, 1, 1 },
+                            ::WHITE);
+            }
+        }
+
+        for (auto &i : m_scene.m_objects) {
+            RayLibMesh * m;
+
+            if (i.modelId() == 0) {
+                continue;
+            }
+            else if (i.modelId() == 1) {
+                m = &(m_assets.carMeshes[0]);
+            }
+            else if (i.modelId() == 2) {
+                m = &(m_assets.carMeshes[2]);
+            }
+            else if (i.modelId() == 3) {
+                m = &(m_assets.carMeshes[1]);
+            }
+            else if (i.isLOD()){
+                m = &(m_assets.objectLodMeshes[i.modelId()]);
+            }
+            else {
+                m = &(m_assets.objectMeshes[i.modelId()]);
+            }
+
+            DrawModelEx(m->_model(),
+                        NormalizeTDWorldLocation(i.location()),
+                        { 0, 1, 0 },
+                        -(i.rotation()) * 90,
+                        { 1, 1, 1 },
+                        ::WHITE);
+        };
+
+        EndMode3D();
+        EndDrawing();
+    }
+
+private:
+    bool m_enableCamera = true;
+
+    TD::GamePalette m_otwPalette;
+    TD::Scene &m_scene;
+    ObjectAssets m_assets;
+
+    const Vector3 m_initial = {
+        ((0x2080 / 4096.f)) - .5f ,
+        ((0x130 / 4096.f)  ),
+        (((4096 * 16) - 0x4780) / 4096.f) - .5f
+    };
+
+    Camera m_camera {
+        .position = m_initial,
+        .target = {
+            m_initial.x,
+            m_initial.y,
+            m_initial.z + 1.f,
+        },
+        .up = { 0.0f, 1.0f, 0.0f },
+        .fovy = 45.0f,
+        .projection = CAMERA_PERSPECTIVE,
+    };
+};
+
 #pragma mark - Main Functions
 
 int mainTestBarfs()
@@ -366,6 +486,7 @@ enum Screens {
     SCREEN_MODEL_EXPLORER,
     SCREEN_TILES_EXPLORER,
     SCREEN_BITMAP_TEST,
+    SCREEN_MODEL_CAMERA_TEST,
 };
 
 int mainExplorers()
@@ -378,6 +499,7 @@ int mainExplorers()
     auto resources = TD::Resources(BasePath());
     auto assets = SceneAssets(resources);
 
+    auto cameraTest = CameraTest(resources, resources.m_scenes[0]);
     auto bitmapTest = BitmapTest(resources);
     auto modelExplorer = ModelExplorer(assets);
     auto tilesExplorer = TilesExplorer(assets);
@@ -388,9 +510,11 @@ int mainExplorers()
     InitWindow(screenWidth, screenHeight, "test");
 
     rlDisableBackfaceCulling();
+
     bitmapTest.setup();
     modelExplorer.setup();
     tilesExplorer.setup();
+    cameraTest.setup();
 
     auto currentScreen = SCREEN_MODEL_EXPLORER;
 
@@ -404,6 +528,9 @@ int mainExplorers()
         if (IsKeyPressed(KEY_THREE))
             currentScreen = SCREEN_BITMAP_TEST;
 
+        if (IsKeyPressed(KEY_FOUR))
+            currentScreen = SCREEN_MODEL_CAMERA_TEST;
+
         switch (currentScreen) {
             case SCREEN_MODEL_EXPLORER:
                 modelExplorer.loop();
@@ -416,138 +543,19 @@ int mainExplorers()
             case SCREEN_BITMAP_TEST:
                 bitmapTest.loop();
                 break;
+
+            case SCREEN_MODEL_CAMERA_TEST:
+                cameraTest.loop();
+                break;
         }
     }
     
-    return 0;
-}
-
-int mainTestCamera() {
-    SetTargetFPS(30);
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    
-    InitWindow(800, 600, "test");
-    
-    Camera camera = { 0 };
-    
-    camera.position = (Vector3){
-        ((0x2080 / 4096.f)) - .5f ,
-        ((0x130 / 4096.f)  ),
-        (((4096 * 16) - 0x4780) / 4096.f) - .5f};
-
-    camera.target = camera.position;
-    camera.target.z += 1;
-    
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
-
-    auto res = TD::Resources(BasePath());
-    
-    auto otwcolbin = res.file("OTWCOL.BIN");
-    auto otwcol = TD::PaletteFromData(otwcolbin);
-    auto otwPalette = TD::GamePalette();
-    otwPalette.copy(otwcol, 0x10);
-    
-    auto &scene = res.m_scenes[0];
-
-    auto assets = ObjectAssets(res, otwPalette, scene);
-
-    rlDisableBackfaceCulling();
-    
-    SetCameraMode(camera, CAMERA_FIRST_PERSON);
-
-    bool enableCamera = true;
-
-    while (!WindowShouldClose()) {
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            if (enableCamera) {
-                enableCamera = false;
-                ShowCursor();
-                EnableCursor();
-            }
-            else {
-                enableCamera = true;
-                HideCursor();
-                DisableCursor();
-            }
-        }
-
-        if (enableCamera) {
-            UpdateCamera(&camera);
-            camera.position.y = ((0x130 / 4096.f) );
-        }
-
-        BeginDrawing();
-        ClearBackground(DARKGRAY);
-        BeginMode3D(camera);
-        
-        for (int y = 0; y < TD::Scene::YTileCount; y++) {
-            for (int x = 0; x < TD::Scene::XTileCount; x++) {
-                
-                auto tileinfo = scene.getTileInfo(x, y);
-                auto tileid = tileinfo.tileId();
-
-                auto &model = tileid < 0x40
-                    ? assets.genericTiles[tileid]
-                    : assets.tileMeshes[tileid - 0x40];
-                
-                Vector3 position;
-                position.x = x;
-                position.y = tileinfo.height() / 4096.;
-                position.z = y;
-                
-                DrawModelEx(model._model(),
-                            position,
-                            { 0, 1, 0 },
-                            -tileinfo.rot() * 90,
-                            { 1, 1, 1 },
-                            ::WHITE);
-            }
-        }
-        
-        for (auto &i : scene.m_objects) {
-            RayLibMesh * m;
-            
-            if (i.modelId() == 0) {
-                continue;
-            }
-            else if (i.modelId() == 1) {
-                m = &(assets.carMeshes[0]);
-            }
-            else if (i.modelId() == 2) {
-                m = &(assets.carMeshes[2]);
-            }
-            else if (i.modelId() == 3) {
-                m = &(assets.carMeshes[1]);
-            }
-            else if (i.isLOD()){
-                m = &(assets.objectLodMeshes[i.modelId()]);
-            }
-            else {
-                m = &(assets.objectMeshes[i.modelId()]);
-            }
-            
-            DrawModelEx(m->_model(),
-                        NormalizeTDWorldLocation(i.location()),
-                        { 0, 1, 0 },
-                        -(i.rotation()) * 90,
-                        { 1, 1, 1 },
-                        ::WHITE);
-        };
-        
-        EndMode3D();
-        EndDrawing();
-    }
-
     return 0;
 }
 
 #pragma mark - Main
 
 int main() {
-//    mainExplorers();
-
-    mainTestCamera();
+    mainExplorers();
 //    mainTestBarfs();
 }
