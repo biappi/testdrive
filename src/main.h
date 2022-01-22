@@ -131,8 +131,6 @@ void CarLst::load(FILE * file) {
 }
 
 struct Car {
-    CarLst lst;
-    
     std::vector<std::byte> sicbin;
     std::vector<std::byte> sic;
    
@@ -314,8 +312,6 @@ public:
     }
     
 public:
-    SceneLst lst;
-    
     std::vector<std::byte> a_dat;
     std::vector<std::byte> one_dat;
     std::vector<std::byte> t_bin;
@@ -382,29 +378,30 @@ Resources::Resources(const std::string basePath)
     for (auto carName : playdisk.carNames()) {
         auto path = basePath + "/" + carName + ".lst";
         auto file = fopen(path.c_str(), "r");
-        
-        Car car;
-        car.lst.load(file);
+
+        CarLst lst;
+        lst.load(file);
         fclose(file);
+
+        Car car;
+        car.col = fileForCar("COL.BIN", carName, lst);
         
-        car.col = this->fileForCar("COL.BIN", carName, car.lst);
+        car.sicbin = fileForCar("SIC.BIN", carName, lst);
+        car.sic = fileForCar(".SIC", carName, lst);
         
-        car.sicbin = this->fileForCar("SIC.BIN", carName, car.lst);
-        car.sic = this->fileForCar(".SIC", carName, car.lst);
+        car.top = fileForCar(".TOP", carName, lst);
+        car.bot1 = fileForCar("1.BOT", carName, lst);
+        car.bot2 = fileForCar("2.BOT", carName, lst);
+        car.lbot = fileForCar("L.BOT", carName, lst);
+        car.rbot = fileForCar("R.BOT", carName, lst);
+        car.etc = fileForCar(".ETC", carName, lst);
         
-        car.top = this->fileForCar(".TOP", carName, car.lst);
-        car.bot1 = this->fileForCar("1.BOT", carName, car.lst);
-        car.bot2 = this->fileForCar("2.BOT", carName, car.lst);
-        car.lbot = this->fileForCar("L.BOT", carName, car.lst);
-        car.rbot = this->fileForCar("R.BOT", carName, car.lst);
-        car.etc = this->fileForCar(".ETC", carName, car.lst);
-        
-        car.sc = this->fileForCar("SC.BIN", carName, car.lst);
-        car.fl1 = this->fileForCar("FL1.LZ", carName, car.lst);
-        car.fl2 = this->fileForCar("FL2.LZ", carName, car.lst);
-        car.bic = this->fileForCar(".BIC", carName, car.lst);
-        car.sid = this->fileForCar(".SID", carName, car.lst);
-        car.icn = this->fileForCar(".ICN", carName, car.lst);
+        car.sc = fileForCar("SC.BIN", carName, lst);
+        car.fl1 = fileForCar("FL1.LZ", carName, lst);
+        car.fl2 = fileForCar("FL2.LZ", carName, lst);
+        car.bic = fileForCar(".BIC", carName, lst);
+        car.sid = fileForCar(".SID", carName, lst);
+        car.icn = fileForCar(".ICN", carName, lst);
 
         carsArray.push_back(car);
         
@@ -426,19 +423,20 @@ Resources::Resources(const std::string basePath)
         auto path = basePath + "/" + sceneName + ".lst";
         auto file = fopen(path.c_str(), "r");
 
-        Scene scene;
-        scene.lst.load(file);
+        SceneLst lst;
+        lst.load(file);
         fclose(file);
-        
+
+        Scene scene;
         // a -> subcourse + 'A'
-        scene.a_dat = fileForScene("A.DAT", sceneName, scene.lst);
-        scene.one_dat = fileForScene("1.DAT", sceneName, scene.lst);
+        scene.a_dat = fileForScene("A.DAT", sceneName, lst);
+        scene.one_dat = fileForScene("1.DAT", sceneName, lst);
         
-        scene.t_bin = fileForScene("T.BIN", sceneName, scene.lst);
+        scene.t_bin = fileForScene("T.BIN", sceneName, lst);
         
         //not used
-        scene.o_bin = fileForScene("O.BIN", sceneName, scene.lst);
-        scene.p_bin = fileForScene("P.BIN", sceneName, scene.lst);
+        scene.o_bin = fileForScene("O.BIN", sceneName, lst);
+        scene.p_bin = fileForScene("P.BIN", sceneName, lst);
         
         scene.tiles = LoadModels(scene.t_bin, 64);
         
