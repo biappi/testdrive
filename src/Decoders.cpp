@@ -9,10 +9,16 @@
 
 std::vector<std::byte> Decode(const std::vector<std::byte> &buf_src) {
     std::vector<std::byte> buf_dst;
-    
-    std::vector<std::byte> buf_private(&buf_src[0], &buf_src[0x400]);
-    auto src_buf_idx = 0x400;
- 
+
+    const auto initial_src_idx = 0x400;
+    auto top = std::min((int)buf_src.size(), initial_src_idx);
+
+    std::vector<std::byte> buf_private(&buf_src[0], &buf_src[top]);
+    for (int i = 0; i < initial_src_idx - top; i++)
+        buf_private.push_back(std::byte(0));
+
+    auto src_buf_idx = initial_src_idx;
+
     std::vector<std::byte> buffer_14(0x300 * 16);
     uint16_t first_word_for_buffer_14 = 0;
     uint8_t  third_byte_for_buffer_14 = 0;
