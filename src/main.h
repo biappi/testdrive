@@ -1,6 +1,3 @@
-// #include "raylib.h"
-// #include "rlgl.h"
-
 #include <cstddef>
 #include <cstdlib>
 #include <string>
@@ -333,8 +330,7 @@ public:
 class Resources {
 public:
     Resources(std::string basePath);
-    ~Resources();
-    
+
     const std::vector<std::byte> file(const std::string &name) const;
     const std::vector<std::byte> fileForCar(const std::string &name, const std::string &lowerCarName, const CarLst &carLst);
     const std::vector<std::byte> fileForScene(const std::string &name, const std::string &lowerCarName, const SceneLst &sceneLst);
@@ -344,7 +340,6 @@ public:
 private:
     std::string basePath;
 
-    FILE *exeFile;
     PlayDisk playdisk;
     std::vector<PackedFileDesc> files;
     
@@ -363,7 +358,7 @@ Resources::Resources(const std::string basePath)
     : basePath(basePath)
 {
     auto exeFilePath = basePath + "/" + "td3.exe";
-    exeFile = fopen(exeFilePath.c_str(), "r");
+    auto exeFile = fopen(exeFilePath.c_str(), "r");
     fseek(exeFile, 0x20ae2, SEEK_SET);
     
     while (true) {
@@ -377,7 +372,8 @@ Resources::Resources(const std::string basePath)
             break;
         }
     }
-    
+    fclose(exeFile);
+
     auto playdiskPath = basePath + "/" + "playdisk.dat";
     auto playdiskFile = fopen(playdiskPath.c_str(), "r");
     playdisk.load(playdiskFile);
@@ -457,10 +453,6 @@ Resources::Resources(const std::string basePath)
     m_scenetto = file("SCENETTO.BIN");
     m_genericObjects = LoadModels(m_scenetto, 64);
     m_genericObjectsLod = LoadModels(m_scenetto, 64, true);
-}
-
-Resources::~Resources() {
-    fclose(exeFile);
 }
 
 uint16_t Hash2(const std::string &name) {
