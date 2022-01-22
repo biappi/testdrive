@@ -18,7 +18,8 @@ struct MenuImages {
         , detail2(res.file("DETAIL2.LZ"), 0x15d, palette)
     { }
 
-    GamePalette palette;
+    const GamePalette palette;
+    
     GameImage select;
     GameImage compass;
     GameImage detail1;

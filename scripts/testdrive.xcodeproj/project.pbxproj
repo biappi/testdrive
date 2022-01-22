@@ -60,6 +60,7 @@
 		3F9C12ED279A04900065A259 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		3F9C12EF279A04950065A259 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3F9C12F1279A04A10065A259 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		3FA865F1279C805F0096B47A /* SceneAssets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneAssets.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +147,7 @@
 				3F12CC8B279B6964001D4C9D /* Images.h */,
 				3F12CC8A279B3F6B001D4C9D /* Explorer.h */,
 				3F12CC89279B33DF001D4C9D /* GameImage.h */,
+				3FA865F1279C805F0096B47A /* SceneAssets.h */,
 			);
 			name = src;
 			path = ../src;
