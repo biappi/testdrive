@@ -203,7 +203,13 @@ struct ObjectAssets {
     std::vector<RayLibMesh> carMeshes;
 };
 
-class ModelExplorer {
+class Screen {
+public:
+    virtual void setup() = 0;
+    virtual void loop() = 0;
+};
+
+class ModelExplorer: public Screen {
 public:
     ModelExplorer(SceneAssets &assets)
         : m_assets(assets)
@@ -250,7 +256,7 @@ private:
     Explorer m_explorer;
 };
 
-class TilesExplorer {
+class TilesExplorer: public Screen {
 public:
     TilesExplorer(SceneAssets &assets)
         : m_assets(assets)
@@ -303,7 +309,7 @@ private:
     Explorer m_explorer;
 };
 
-class BitmapTest {
+class BitmapTest: public Screen {
 public:
     BitmapTest(TD::Resources &resources)
         : m_menuImages(resources)
@@ -351,7 +357,7 @@ private:
     std::vector<TD::CarImages> m_carImages;
 };
 
-class CameraTest {
+class CameraTest: public Screen {
 public:
     CameraTest(TD::Resources& res, TD::Scene& scene)
         : m_scene(scene)
@@ -360,8 +366,30 @@ public:
     {
     }
 
-    void setup() {
+    void resetCamera() {
+        auto position = (Vector3) {
+            ((0x2080 / 4096.f)) - .5f ,
+            ((0x130 / 4096.f)  ),
+            (((4096 * 16) - 0x4780) / 4096.f) - .5f
+        };
+
+        m_camera = {
+            .position = position,
+            .target = {
+                position.x,
+                position.y,
+                position.z + 1.f,
+            },
+            .up = { 0.0f, 1.0f, 0.0f },
+            .fovy = 45.0f,
+            .projection = CAMERA_PERSPECTIVE,
+        };
+
         SetCameraMode(m_camera, CAMERA_FIRST_PERSON);
+    }
+
+    void setup() {
+        resetCamera();
     }
 
     void loop() {
@@ -446,29 +474,11 @@ public:
     }
 
 private:
-    bool m_enableCamera = true;
-
-    TD::GamePalette m_otwPalette;
     TD::Scene &m_scene;
+    TD::GamePalette m_otwPalette;
     ObjectAssets m_assets;
-
-    const Vector3 m_initial = {
-        ((0x2080 / 4096.f)) - .5f ,
-        ((0x130 / 4096.f)  ),
-        (((4096 * 16) - 0x4780) / 4096.f) - .5f
-    };
-
-    Camera m_camera {
-        .position = m_initial,
-        .target = {
-            m_initial.x,
-            m_initial.y,
-            m_initial.z + 1.f,
-        },
-        .up = { 0.0f, 1.0f, 0.0f },
-        .fovy = 45.0f,
-        .projection = CAMERA_PERSPECTIVE,
-    };
+    Camera m_camera;
+    bool m_enableCamera = true;
 };
 
 int mainTestBarfs()
@@ -479,13 +489,6 @@ int mainTestBarfs()
     barfs(scene);
     exit(0);
 }
-
-enum Screens {
-    SCREEN_MODEL_EXPLORER,
-    SCREEN_TILES_EXPLORER,
-    SCREEN_BITMAP_TEST,
-    SCREEN_MODEL_CAMERA_TEST,
-};
 
 int main()
 {
@@ -510,43 +513,31 @@ int main()
 
     rlDisableBackfaceCulling();
 
-    bitmapTest.setup();
-    modelExplorer.setup();
-    tilesExplorer.setup();
-    cameraTest.setup();
-
-    auto currentScreen = SCREEN_MODEL_EXPLORER;
+    Screen* currentScreen = &cameraTest;
+    currentScreen->setup();
 
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_ONE))
-            currentScreen = SCREEN_MODEL_EXPLORER;
-
-        if (IsKeyPressed(KEY_TWO))
-            currentScreen = SCREEN_TILES_EXPLORER;
-
-        if (IsKeyPressed(KEY_THREE))
-            currentScreen = SCREEN_BITMAP_TEST;
-
-        if (IsKeyPressed(KEY_FOUR))
-            currentScreen = SCREEN_MODEL_CAMERA_TEST;
-
-        switch (currentScreen) {
-            case SCREEN_MODEL_EXPLORER:
-                modelExplorer.loop();
-                break;
-
-            case SCREEN_TILES_EXPLORER:
-                tilesExplorer.loop();
-                break;
-
-            case SCREEN_BITMAP_TEST:
-                bitmapTest.loop();
-                break;
-
-            case SCREEN_MODEL_CAMERA_TEST:
-                cameraTest.loop();
-                break;
+        if (IsKeyPressed(KEY_ONE)) {
+            currentScreen = &modelExplorer;
+            currentScreen->setup();
         }
+
+        if (IsKeyPressed(KEY_TWO)) {
+            currentScreen = &tilesExplorer;
+            currentScreen->setup();
+        }
+
+        if (IsKeyPressed(KEY_THREE)) {
+            currentScreen = &bitmapTest;
+            currentScreen->setup();
+        }
+
+        if (IsKeyPressed(KEY_FOUR)) {
+            currentScreen = &cameraTest;
+            currentScreen->setup();
+        }
+
+        currentScreen->loop();
     }
     
     return 0;
