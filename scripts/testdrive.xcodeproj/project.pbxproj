@@ -48,7 +48,7 @@
 		3F61B9B5279B24DB006CF0ED /* libraylib.400.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libraylib.400.dylib; sourceTree = "<group>"; };
 		3F650495279A035F00176995 /* testdrive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testdrive; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9C12D6279A03A60065A259 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
-		3F9C12D7279A03A60065A259 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Resources.h; sourceTree = "<group>"; };
+		3F9C12D7279A03A60065A259 /* ReadUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReadUtils.h; sourceTree = "<group>"; };
 		3F9C12D8279A03A60065A259 /* Decoders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoders.h; sourceTree = "<group>"; };
 		3F9C12D9279A03A60065A259 /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
 		3F9C12DA279A03A60065A259 /* Decoders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Decoders.cpp; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				3F9C12D6279A03A60065A259 /* main.h */,
-				3F9C12D7279A03A60065A259 /* Resources.h */,
+				3F9C12D7279A03A60065A259 /* ReadUtils.h */,
 				3F9C12D8279A03A60065A259 /* Decoders.h */,
 				3F9C12D9279A03A60065A259 /* Resources.cpp */,
 				3F9C12DA279A03A60065A259 /* Decoders.cpp */,

@@ -5,4 +5,3 @@
 //  Created by Antonio Malara on 11/10/2020.
 //
 
-#include "Resources.h"
