@@ -367,11 +367,8 @@ public:
     }
 
     void resetCamera() {
-        auto position = (Vector3) {
-            ((0x2080 / 4096.f)) - .5f ,
-            ((0x130 / 4096.f)  ),
-            (((4096 * 16) - 0x4780) / 4096.f) - .5f
-        };
+        auto point = TD::Point(0x0820, 0x11e0, 0x0980);
+        auto position = NormalizeTDWorldLocation(point);
 
         m_camera = {
             .position = position,
