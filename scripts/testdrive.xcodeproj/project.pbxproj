@@ -56,6 +56,7 @@
 		3F9C12F1279A04A10065A259 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3FA865F1279C805F0096B47A /* SceneAssets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneAssets.h; sourceTree = "<group>"; };
 		3FA865F7279CA4CB0096B47A /* Scene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		3FA865F8279CC7990096B47A /* Draw3DText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Draw3DText.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +142,7 @@
 				3F9C12D6279A03A60065A259 /* Resources.h */,
 				3FA865F7279CA4CB0096B47A /* Scene.h */,
 				3FA865F1279C805F0096B47A /* SceneAssets.h */,
+				3FA865F8279CC7990096B47A /* Draw3DText.h */,
 			);
 			name = src;
 			path = ../src;

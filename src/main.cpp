@@ -22,6 +22,7 @@
 #include "Explorer.h"
 #include "Images.h"
 #include "SceneAssets.h"
+#include "Draw3DText.h"
 
 /*
  
@@ -270,9 +271,9 @@ public:
         m_camera = {
             .position = position,
             .target = {
-                position.x,
+                position.x - 0.1f,
                 position.y,
-                position.z + 1.f,
+                position.z,
             },
             .up = { 0.0f, 1.0f, 0.0f },
             .fovy = 45.0f,
@@ -355,15 +356,43 @@ public:
                 m = &(m_assets.objectMeshes[i.modelId()]);
             }
 
-            DrawModelEx(m->_model(),
-                        NormalizeTDWorldLocation(i.location()),
-                        { 0, 1, 0 },
-                        -(i.rotation()) * 90,
-                        { 1, 1, 1 },
-                        ::WHITE);
+            auto model  = m->_model();
+            auto position = NormalizeTDWorldLocation(i.location());
+            auto angle = -(i.rotation()) * 90;
+            auto bb = GetModelBoundingBox(model);
+
+            rlPushMatrix();
+
+            rlTranslatef(position.x, position.y, position.z);
+
+            rlPushMatrix();
+            rlRotatef(angle, 0, 1, 0);
+
+            DrawModel(model, { 0 }, 1, ::WHITE);
+
+            if (m_drawBoundingBox)
+                DrawBoundingBox(bb, ::PURPLE);
+
+            rlPopMatrix();
+
+            if (m_drawObjectId) {
+                rlPushMatrix();
+                rlTranslatef(bb.max.x, bb.max.y, bb.min.z);
+                rlScalef(.005,.005f,.005f);
+                rlRotatef(90, 1, 0, 0);
+                rlRotatef(90, 0, 0, 1);
+                
+                char suca[30];
+                snprintf(suca, sizeof(suca), "ID: %02x", i.modelId());
+                DrawText3D(GetFontDefault(), suca, { 0 }, 8, 1, 0, true, ::MAROON);
+                rlPopMatrix();
+            }
+
+            rlPopMatrix();
         };
 
         EndMode3D();
+
         EndDrawing();
     }
 
@@ -373,6 +402,8 @@ private:
     SceneAssets m_assets;
     Camera m_camera;
     bool m_enableCamera = true;
+    bool m_drawBoundingBox = true;
+    bool m_drawObjectId = true;
 };
 
 int mainTestBarfs()
