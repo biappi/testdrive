@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include "GameImage.h"
+#include "Resources.h"
+
 namespace TD {
 
 struct MenuImages {

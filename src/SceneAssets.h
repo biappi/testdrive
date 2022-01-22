@@ -7,6 +7,9 @@
 
 #pragma once
 
+#import "Resources.h"
+#import "RaylibMesh.h"
+
 struct SceneAssets {
     SceneAssets(TD::Resources& res,
                 TD::GamePalette& otwPalette,

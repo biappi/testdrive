@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include "Models.h"
+#include "GameImage.h"
+
 namespace TD {
 
 struct TileInfo {

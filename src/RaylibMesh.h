@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include "Models.h"
+#include "GameImage.h"
+#include "Scene.h"
+
 class RayLibMesh {
 public:
 

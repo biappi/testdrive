@@ -18,14 +18,7 @@
 #include <map>
 #include <memory>
 
-#include "Decoders.h"
-#include "Models.h"
-#include "GameImage.h"
-#include "Scene.h"
-#include "Resources.h"
-
 #include "barfs.h"
-#include "RaylibMesh.h"
 #include "Explorer.h"
 #include "Images.h"
 #include "SceneAssets.h"
@@ -54,12 +47,8 @@
  
  */
 
-const int TD3ScreenSizeWidth  = 320;
-const int TD3ScreenSizeHeight = 200;
+const std::string BasePath = "data/";
 
-std::string BasePath() {
-    return "data/";
-}
 
 Vector3 NormalizeTDWorldLocation(TD::Point tdPos) {
     return Vector3 {
@@ -388,7 +377,7 @@ private:
 
 int mainTestBarfs()
 {
-    auto res = TD::Resources(BasePath());
+    auto res = TD::Resources(BasePath);
     auto &scene = res.m_scenes[0];
 
     barfs(scene);
@@ -400,10 +389,13 @@ int main()
 //    mainTestBarfs();
     const int multiplicator = 3;
 
-    const int screenWidth = TD3ScreenSizeWidth * multiplicator;
+    const int TD3ScreenSizeWidth  = 320;
+    const int TD3ScreenSizeHeight = 200;
+
+    const int screenWidth  = TD3ScreenSizeWidth  * multiplicator;
     const int screenHeight = TD3ScreenSizeHeight * multiplicator;
 
-    auto resources = TD::Resources(BasePath());
+    auto resources = TD::Resources(BasePath);
     auto& scene = resources.m_scenes[0];
 
     auto otwPalette = TD::GamePalette(resources.file("OTWCOL.BIN"), 0x10);

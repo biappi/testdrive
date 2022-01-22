@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "Scene.h"
+
 // Maybe some sort of sprite decompression / decrption routine
 // used for billboards in the 3d world
 

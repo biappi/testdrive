@@ -1,3 +1,5 @@
+#include "Scene.h"
+
 namespace TD {
 
 class PlayDisk {
