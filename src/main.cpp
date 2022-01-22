@@ -471,8 +471,6 @@ private:
     };
 };
 
-#pragma mark - Main Functions
-
 int mainTestBarfs()
 {
     auto res = TD::Resources(BasePath());
@@ -489,8 +487,9 @@ enum Screens {
     SCREEN_MODEL_CAMERA_TEST,
 };
 
-int mainExplorers()
+int main()
 {
+//    mainTestBarfs();
     const int multiplicator = 3;
 
     const int screenWidth = TD3ScreenSizeWidth * multiplicator;
@@ -551,11 +550,4 @@ int mainExplorers()
     }
     
     return 0;
-}
-
-#pragma mark - Main
-
-int main() {
-    mainExplorers();
-//    mainTestBarfs();
 }
