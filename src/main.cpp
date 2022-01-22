@@ -97,103 +97,38 @@ void print_sprite_data(const TD::Model &model)
     printf("\n");
 }
 
-class SceneAssets {
-public:
-    SceneAssets(TD::Resources &resources)
-        : m_resources(resources)
+struct SceneAssets {
+    SceneAssets(TD::Resources& res,
+                TD::GamePalette& otwPalette,
+                TD::Scene& scene)
     {
-        loadOTW();
-        loadGenericTiles();
-        loadSceneTiles();
-        loadObjectModels();
-    }
-
-    TD::Scene& scene() {
-        return m_resources.m_scenes[0];
-    }
-
-    const std::vector<TD::Model>& tileModels() {
-        return m_tile_models;
-    }
-
-    std::vector<RayLibMesh>& tileMeshes() {
-        return m_tile_meshes;
-    }
-
-    const std::vector<TD::Model>& objectModels() {
-        return m_object_models;
-    }
-
-    std::vector<RayLibMesh>& objectMeshes() {
-        return m_object_meshes;
-    }
-
-private:
-    void loadOTW() {
-        auto otwcolbin = m_resources.file("OTWCOL.BIN");
-        auto otwcol = TD::PaletteFromData(otwcolbin);
-        m_otwPalette.copy(otwcol, 0x10);
-    }
-
-    void loadGenericTiles() {
-        for (auto &tileTdModel : m_resources.m_genericTiles) {
-            m_tile_models.emplace_back(TD::Model(tileTdModel));
-            m_tile_meshes.emplace_back(RayLibMesh(tileTdModel, m_otwPalette, scene()));
-        }
-    }
-
-    void loadSceneTiles() {
-        for (auto &tileTdModel : scene().tiles) {
-            m_tile_models.emplace_back(TD::Model(tileTdModel));
-            m_tile_meshes.emplace_back(RayLibMesh(tileTdModel, m_otwPalette, scene()));
-        }
-    }
-
-    void loadObjectModels() {
-        int DIOCAN = 0;
-        for (auto &object : scene().m_objects) {
-            if (DIOCAN == 1) continue;
-            if (DIOCAN == 2) continue;
-            if (DIOCAN == 3) continue;
-
-            auto id = object.modelId();
-            auto tdModel = TD::LoadModel(m_resources.m_scenetto, id, object.isLOD());
-
-            m_object_models.emplace_back(TD::Model(tdModel));
-            m_object_meshes.emplace_back(RayLibMesh(tdModel, m_otwPalette, scene()));
-        }
-    }
-
-    TD::Resources& m_resources;
-    TD::GamePalette m_otwPalette { };
-    std::vector<RayLibMesh> m_generic_tiles;
-
-    std::vector<TD::Model>  m_tile_models;
-    std::vector<RayLibMesh> m_tile_meshes;
-
-    std::vector<TD::Model>  m_object_models;
-    std::vector<RayLibMesh> m_object_meshes;
-};
-
-struct ObjectAssets {
-    ObjectAssets(TD::Resources& res,
-                 TD::GamePalette& otwPalette,
-                 TD::Scene& scene)
-    {
-        for (auto &tileTdModel : res.m_genericTiles)
+        for (auto &tileTdModel : res.m_genericTiles) {
             genericTiles.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
 
-        for (auto &tileTdModel : scene.tiles)
+            tileExplorerMeshes.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
+            tileExplorerModels.emplace_back(TD::Model(tileTdModel));
+        }
+
+        for (auto &tileTdModel : scene.tiles) {
             tileMeshes.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
 
-        for (auto &i : res.m_genericObjects)
+            tileExplorerMeshes.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
+            tileExplorerModels.emplace_back(TD::Model(tileTdModel));
+        }
+
+        for (auto &i : res.m_genericObjects) {
             objectMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+
+            modelExplorerMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+            modelExplorerModels.emplace_back(TD::Model(i));
+        }
 
         for (auto &i : res.m_genericObjectsLod)
             objectLodMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
 
-        for (auto &i : res.m_carModels)
+        for (auto &i : res.m_carModels) {
             carMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+        }
     }
 
     std::vector<RayLibMesh> genericTiles;
@@ -201,6 +136,12 @@ struct ObjectAssets {
     std::vector<RayLibMesh> objectMeshes;
     std::vector<RayLibMesh> objectLodMeshes;
     std::vector<RayLibMesh> carMeshes;
+
+    std::vector<TD::Model>  tileExplorerModels;
+    std::vector<RayLibMesh> tileExplorerMeshes;
+
+    std::vector<TD::Model>  modelExplorerModels;
+    std::vector<RayLibMesh> modelExplorerMeshes;
 };
 
 class Screen {
@@ -213,15 +154,14 @@ class ModelExplorer: public Screen {
 public:
     ModelExplorer(SceneAssets &assets)
         : m_assets(assets)
-        , m_explorer("MODELS EXPLORER", assets.objectMeshes().size())
+        , m_explorer("MODELS EXPLORER", m_assets.modelExplorerModels.size())
     {
         m_explorer.setScale(100);
-        m_explorer.setCurrent(86);
     }
 
     void setup() {
         SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
-        printa(m_assets.objectModels()[m_explorer.current()]);
+        printa(m_assets.modelExplorerModels[m_explorer.current()]);
     }
 
     void loop() {
@@ -230,12 +170,12 @@ public:
         m_explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printa(m_assets.objectModels()[meshNr]);
+            printa(m_assets.modelExplorerModels[meshNr]);
         }
 
         m_explorer.beginDrawingObject();
 
-        DrawModelEx(m_assets.objectMeshes()[meshNr]._model(),
+        DrawModelEx(m_assets.modelExplorerMeshes[meshNr]._model(),
                     { 0 },
                     { 0, 1, 0 },
                     0,
@@ -243,10 +183,6 @@ public:
                     ::WHITE);
 
         m_explorer.endDrawingObject();
-
-        char sucaminchia[100];
-        snprintf(sucaminchia, 100, "object %03lu - flags %04x", meshNr + 4, m_assets.scene().m_objects[meshNr+4].flags());
-        DrawText(sucaminchia, 30, 80, 20, BLUE);
 
         EndDrawing();
     }
@@ -260,12 +196,12 @@ class TilesExplorer: public Screen {
 public:
     TilesExplorer(SceneAssets &assets)
         : m_assets(assets)
-        , m_explorer("TILES EXPLORER", assets.tileMeshes().size())
+        , m_explorer("TILES EXPLORER", m_assets.tileExplorerMeshes.size())
     { }
 
     void setup() {
         SetCameraMode(m_explorer.camera(), CAMERA_PERSPECTIVE);
-        printa(m_assets.tileModels()[0]);
+        printa(m_assets.tileExplorerModels[0]);
     }
 
     void loop() {
@@ -275,13 +211,13 @@ public:
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
             printf(" --- tile %zu ---\n", meshNr);
-            print_sprite_data(m_assets.tileModels()[meshNr]);
+            print_sprite_data(m_assets.tileExplorerModels[meshNr]);
         }
 
         BeginDrawing();
 
         m_explorer.beginDrawingObject();
-        for (auto &sprite : m_assets.tileModels()[meshNr].sprites()) {
+        for (auto &sprite : m_assets.tileExplorerModels[meshNr].sprites()) {
             Vector3 pos;
             pos.x =  ((int16_t) sprite.b) / 1024.;
             pos.y =  ((int16_t) sprite.d) / 4096.;
@@ -294,7 +230,7 @@ public:
         DrawSphere({ .5, 0, 0 }, 0.05, GREEN);
         DrawSphere({ 0, 0, .5 }, 0.05, BLUE);
 
-        DrawModel(m_assets.tileMeshes()[meshNr]._model(),
+        DrawModel(m_assets.tileExplorerMeshes[meshNr]._model(),
                   { 0 },
                   1,
                   ::WHITE);
@@ -473,7 +409,7 @@ public:
 private:
     TD::Scene &m_scene;
     TD::GamePalette m_otwPalette;
-    ObjectAssets m_assets;
+    SceneAssets m_assets;
     Camera m_camera;
     bool m_enableCamera = true;
 };
@@ -496,9 +432,12 @@ int main()
     const int screenHeight = TD3ScreenSizeHeight * multiplicator;
 
     auto resources = TD::Resources(BasePath());
-    auto assets = SceneAssets(resources);
+    auto& scene = resources.m_scenes[0];
 
-    auto cameraTest = CameraTest(resources, resources.m_scenes[0]);
+    auto otwPalette = TD::GamePalette(resources.file("OTWCOL.BIN"), 0x10);
+
+    auto assets = SceneAssets(resources, otwPalette, scene);
+    auto cameraTest = CameraTest(resources, scene);
     auto bitmapTest = BitmapTest(resources);
     auto modelExplorer = ModelExplorer(assets);
     auto tilesExplorer = TilesExplorer(assets);
