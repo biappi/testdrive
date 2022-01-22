@@ -1,8 +1,8 @@
 //
-//  main.m
-//  ray
+//  main.cpp
+//  testdrive
 //
-//  Created by Antonio Malara on 11/10/2020.
+//  Created by Antonio Malara on 22/01/2022.
 //
 
 #include <raylib.h>
