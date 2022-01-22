@@ -9,6 +9,74 @@
 
 namespace TD {
 
+struct Color {
+    uint8_t r, g, b, a;
+};
+
+static const std::vector<Color> DefaultPalette = {
+    { 0x00, 0x00, 0x00, 0xff },
+    { 0x00, 0x00, 0xa0, 0xff },
+    { 0x00, 0xa0, 0x00, 0xff },
+    { 0x00, 0xa0, 0xa0, 0xff },
+    { 0xa0, 0x00, 0x00, 0xff },
+    { 0xa0, 0x00, 0xa0, 0xff },
+    { 0xa0, 0x50, 0x00, 0xff },
+    { 0xa0, 0xa0, 0xa0, 0xff },
+    { 0x50, 0x50, 0x50, 0xff },
+    { 0x50, 0x50, 0xf0, 0xff },
+    { 0x50, 0xf0, 0x50, 0xff },
+    { 0x50, 0xf0, 0xf0, 0xff },
+    { 0xf0, 0x50, 0x50, 0xff },
+    { 0xf0, 0x50, 0xf0, 0xff },
+    { 0xf0, 0xf0, 0x50, 0xff },
+    { 0xf0, 0xf0, 0xf0, 0xff },
+};
+
+class GamePalette {
+public:
+    GamePalette()
+        : palette(0x100)
+    {
+        copy(DefaultPalette, 0);
+    }
+
+    GamePalette(const std::vector<std::byte> &data, int at)
+        : palette(0x100)
+    {
+        auto palette = PaletteFromData(data);
+        copy(DefaultPalette, 0);
+        copy(palette, at);
+    }
+
+    void copy(std::vector<Color> src, int at) {
+        for (int i = 0; i < src.size(); i++) {
+            palette[at + i] = src[i];
+        }
+    }
+
+    Color get(int at) const {
+        return palette[at];
+    }
+
+private:
+    std::vector<Color> palette;
+
+    static std::vector<Color> PaletteFromData(const std::vector<std::byte> &data) {
+        auto count = data.size() / 3;
+        std::vector<Color> palette(count);
+
+        for (int i = 0; i < count; i++) {
+            palette[i].r = std::to_integer<uint8_t>(data[(i * 3) + 0]) << 2;
+            palette[i].g = std::to_integer<uint8_t>(data[(i * 3) + 1]) << 2;
+            palette[i].b = std::to_integer<uint8_t>(data[(i * 3) + 2]) << 2;
+            palette[i].a = 255;
+        }
+
+        return palette;
+    }
+
+};
+
 class GameImage {
 public:
     GameImage(const std::vector<std::byte> &imageLz, int width, const GamePalette &palette, int colorBase = 0)
@@ -25,7 +93,10 @@ public:
             for (int x = 0; x < width; x++) {
                 auto srcIndex = width * (height - y - 1) + x;
                 auto dstIndex = width * y + x;
-                m_bitmap[dstIndex] = palette.palette[std::to_integer<uint8_t>(bitmap8bpp[srcIndex]) + colorBase];
+                auto pixel = bitmap8bpp[srcIndex];
+                auto color = std::to_integer<uint8_t>(pixel);
+
+                m_bitmap[dstIndex] = palette.get(color + colorBase);
             }
         }
 

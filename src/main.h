@@ -10,6 +10,7 @@
 
 #include "Decoders.h"
 #include "Models.h"
+#include "GameImage.h"
 
 const int TD3ScreenSizeWidth  = 320;
 const int TD3ScreenSizeHeight = 200;
@@ -19,35 +20,6 @@ std::string BasePath() {
 }
 
 namespace TD {
-
-struct Color {
-    uint8_t r, g, b, a;
-};
-
-std::vector<Color> PaletteFromData(const std::vector<std::byte> &data) {
-    auto count = data.size() / 3;
-    std::vector<Color> palette(count);
-
-    for (int i = 0; i < count; i++) {
-        palette[i].r = std::to_integer<uint8_t>(data[(i * 3) + 0]) << 2;
-        palette[i].g = std::to_integer<uint8_t>(data[(i * 3) + 1]) << 2;
-        palette[i].b = std::to_integer<uint8_t>(data[(i * 3) + 2]) << 2;
-        palette[i].a = 255;
-    }
-
-    return palette;
-}
-
-class GamePalette {
-public:
-    std::vector<Color> palette;
-
-    GamePalette();
-
-    GamePalette(const std::vector<std::byte> &data, int at);
-
-    void copy(std::vector<Color> palette, int at);
-};
 
 class PlayDisk {
 public:
@@ -307,8 +279,8 @@ public:
             colorHi = std::to_integer<uint8_t>(a_dat[doubleColorTable + (idx * 2) + 1]);
         }
         
-        auto pattern0rgb = palette.palette[colorLo];
-        auto pattern1rgb = palette.palette[colorHi];
+        auto pattern0rgb = palette.get(colorLo);
+        auto pattern1rgb = palette.get(colorHi);
         
         Color color;
         color.r = (pattern0rgb.r + pattern1rgb.r) / 2;
@@ -608,77 +580,5 @@ const std::vector<std::byte> Resources::fileForScene(const std::string &name, co
     return {};
 }
 
-static std::vector<Color> defaultPalette = {
-    { 0x00, 0x00, 0x00, 0xff },
-    { 0x00, 0x00, 0x28, 0xff },
-    { 0x00, 0x28, 0x00, 0xff },
-    { 0x00, 0x28, 0x28, 0xff },
-    { 0x28, 0x00, 0x00, 0xff },
-    { 0x28, 0x00, 0x28, 0xff },
-    { 0x28, 0x14, 0x00, 0xff },
-    { 0x28, 0x28, 0x28, 0xff },
-    { 0x14, 0x14, 0x14, 0xff },
-    { 0x14, 0x14, 0x3c, 0xff },
-    { 0x14, 0x3c, 0x14, 0xff },
-    { 0x14, 0x3c, 0x3c, 0xff },
-    { 0x3c, 0x14, 0x14, 0xff },
-    { 0x3c, 0x14, 0x3c, 0xff },
-    { 0x3c, 0x3c, 0x14, 0xff },
-    { 0x3c, 0x3c, 0x3c, 0xff },
-};
-
-std::vector<Color> DefaultPalette() {
-    static bool doubled = false;
-
-    static std::vector<Color> defPalette = {
-        { 0x00, 0x00, 0x00, 0xff },
-        { 0x00, 0x00, 0x28, 0xff },
-        { 0x00, 0x28, 0x00, 0xff },
-        { 0x00, 0x28, 0x28, 0xff },
-        { 0x28, 0x00, 0x00, 0xff },
-        { 0x28, 0x00, 0x28, 0xff },
-        { 0x28, 0x14, 0x00, 0xff },
-        { 0x28, 0x28, 0x28, 0xff },
-        { 0x14, 0x14, 0x14, 0xff },
-        { 0x14, 0x14, 0x3c, 0xff },
-        { 0x14, 0x3c, 0x14, 0xff },
-        { 0x14, 0x3c, 0x3c, 0xff },
-        { 0x3c, 0x14, 0x14, 0xff },
-        { 0x3c, 0x14, 0x3c, 0xff },
-        { 0x3c, 0x3c, 0x14, 0xff },
-        { 0x3c, 0x3c, 0x3c, 0xff },
-    };
-
-    if (!doubled) {
-        for (int i = 0; i < defPalette.size(); i++) {
-            defPalette[i].r <<= 2;
-            defPalette[i].g <<= 2;
-            defPalette[i].b <<= 2;
-        }
-        doubled = true;
-    }
-    
-    return defPalette;
-}
-
-GamePalette::GamePalette()
-    : palette(0x100)
-{
-    copy(DefaultPalette(), 0);
-}
-
-GamePalette::GamePalette(const std::vector<std::byte> &data, int at)
-    : palette(0x100)
-{
-    auto palette = PaletteFromData(data);
-    copy(DefaultPalette(), 0);
-    copy(palette, at);
-}
-
-void GamePalette::copy(std::vector<Color> src, int at) {
-    for (int i = 0; i < src.size(); i++) {
-        palette[at + i] = src[i];
-    }
-}
 
 }
