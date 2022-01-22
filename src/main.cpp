@@ -11,10 +11,21 @@
 #include <cmath>
 #include <utility>
 
-#include "main.h"
+#include <cstddef>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+
+#include "Decoders.h"
+#include "Models.h"
+#include "GameImage.h"
+#include "Scene.h"
+#include "Resources.h"
+
 #include "barfs.h"
 #include "RaylibMesh.h"
-#include "GameImage.h"
 #include "Explorer.h"
 #include "Images.h"
 #include "SceneAssets.h"
@@ -42,6 +53,13 @@
     ds:scratch_buffer == contents of scene011.dat
  
  */
+
+const int TD3ScreenSizeWidth  = 320;
+const int TD3ScreenSizeHeight = 200;
+
+std::string BasePath() {
+    return "data/";
+}
 
 Vector3 NormalizeTDWorldLocation(TD::Point tdPos) {
     return Vector3 {
