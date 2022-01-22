@@ -175,6 +175,34 @@ private:
     std::vector<RayLibMesh> m_object_meshes;
 };
 
+struct ObjectAssets {
+    ObjectAssets(TD::Resources& res,
+                 TD::GamePalette& otwPalette,
+                 TD::Scene& scene)
+    {
+        for (auto &tileTdModel : res.m_genericTiles)
+            genericTiles.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
+
+        for (auto &tileTdModel : scene.tiles)
+            tileMeshes.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
+
+        for (auto &i : res.m_genericObjects)
+            objectMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+
+        for (auto &i : res.m_genericObjectsLod)
+            objectLodMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+
+        for (auto &i : res.m_carModels)
+            carMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
+    }
+
+    std::vector<RayLibMesh> genericTiles;
+    std::vector<RayLibMesh> tileMeshes;
+    std::vector<RayLibMesh> objectMeshes;
+    std::vector<RayLibMesh> objectLodMeshes;
+    std::vector<RayLibMesh> carMeshes;
+};
+
 class ModelExplorer {
 public:
     ModelExplorer(SceneAssets &assets)
@@ -422,38 +450,9 @@ int mainTestCamera() {
     otwPalette.copy(otwcol, 0x10);
     
     auto &scene = res.m_scenes[0];
-    
-    std::vector<RayLibMesh> genericTiles;
-    std::vector<RayLibMesh> tileMeshes;
-    std::vector<RayLibMesh> objectMeshes;
-    std::vector<RayLibMesh> objectLodMeshes;
-    std::vector<RayLibMesh> carMeshes;
-    
-    for (auto &tileTdModel : res.m_genericTiles) {
-        genericTiles.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
-        genericTiles.back().load();
-    }
-    
-    for (auto &tileTdModel : scene.tiles) {
-        tileMeshes.emplace_back(RayLibMesh(tileTdModel, otwPalette, scene));
-        tileMeshes.back().load();
-    }
 
-    for (auto &i : res.m_genericObjects) {
-        objectMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
-        objectMeshes.back().load();
-    }
+    auto assets = ObjectAssets(res, otwPalette, scene);
 
-    for (auto &i : res.m_genericObjectsLod) {
-        objectLodMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
-        objectLodMeshes.back().load();
-    }
-    
-    for (auto &i : res.m_carModels) {
-        carMeshes.emplace_back(RayLibMesh(i, otwPalette, scene));
-        carMeshes.back().load();
-    }
-    
     rlDisableBackfaceCulling();
     
     SetCameraMode(camera, CAMERA_FIRST_PERSON);
@@ -488,7 +487,10 @@ int mainTestCamera() {
                 
                 auto tileinfo = scene.getTileInfo(x, y);
                 auto tileid = tileinfo.tileId();
-                auto &model = tileid < 0x40 ? genericTiles[tileid] : tileMeshes[tileid - 0x40];
+
+                auto &model = tileid < 0x40
+                    ? assets.genericTiles[tileid]
+                    : assets.tileMeshes[tileid - 0x40];
                 
                 Vector3 position;
                 position.x = x;
@@ -511,19 +513,19 @@ int mainTestCamera() {
                 continue;
             }
             else if (i.modelId() == 1) {
-                m = &carMeshes[0];
+                m = &(assets.carMeshes[0]);
             }
             else if (i.modelId() == 2) {
-                m = &carMeshes[2];
+                m = &(assets.carMeshes[2]);
             }
             else if (i.modelId() == 3) {
-                m = &carMeshes[1];
+                m = &(assets.carMeshes[1]);
             }
             else if (i.isLOD()){
-                m = &objectLodMeshes[i.modelId()];
+                m = &(assets.objectLodMeshes[i.modelId()]);
             }
             else {
-                m = &objectMeshes[i.modelId()];
+                m = &(assets.objectMeshes[i.modelId()]);
             }
             
             DrawModelEx(m->_model(),
@@ -544,8 +546,8 @@ int mainTestCamera() {
 #pragma mark - Main
 
 int main() {
-    mainExplorers();
+//    mainExplorers();
 
-//    mainTestCamera();
+    mainTestCamera();
 //    mainTestBarfs();
 }
