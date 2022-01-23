@@ -15,10 +15,10 @@ namespace TD {
 struct MenuImages {
     MenuImages(Resources &res)
         : palette(res.file("SELCOLR.BIN"), 0x10)
-        , select (res.file("SELECT.LZ"),    320, palette)
-        , compass(res.file("COMPASS.LZ"),   152, palette)
-        , detail1(res.file("DETAIL1.LZ"), 0x161, palette)
-        , detail2(res.file("DETAIL2.LZ"), 0x15d, palette)
+        , select (res.file("SELECT.LZ"),  320, palette)
+        , compass(res.file("COMPASS.LZ"), 152, palette)
+        , detail1(res.file("DETAIL1.LZ"), 184, palette)
+        , detail2(res.file("DETAIL2.LZ"), 184, palette)
     { }
 
     const GamePalette palette;
