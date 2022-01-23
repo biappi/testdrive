@@ -10,11 +10,43 @@
 #define min(a, b) ((a < b) ? (a) : (b))
 #define max(a, b) ((a < b) ? (b) : (a))
 
+class Spinner {
+public:
+    Spinner(int size, int decreaseKey, int increaseKey)
+        : m_size(size)
+        , m_decreaseKey(decreaseKey)
+        , m_increaseKey(increaseKey)
+    { }
+
+    void checkInput() {
+        if (IsKeyPressed(m_increaseKey))
+            m_current = min(m_current + 1, m_size - 1);
+
+        if (IsKeyPressed(m_decreaseKey))
+            m_current = max(m_current - 1, 0);
+    }
+
+    int current() const {
+        return m_current;
+    }
+
+    int size() const {
+        return m_size;
+    }
+
+private:
+    const int m_decreaseKey;
+    const int m_increaseKey;
+
+    int m_size;
+    int m_current;
+};
+
 class Explorer {
 public:
-    Explorer(std::string title, size_t size)
+    Explorer(std::string title, int size)
         : m_title(title)
-        , m_size(size)
+        , m_spinner(size, KEY_LEFT, KEY_RIGHT)
     { }
 
     const Camera& camera() const {
@@ -22,21 +54,11 @@ public:
     }
 
     void checkInput() {
-        if (IsKeyPressed(KEY_RIGHT)) {
-            m_current = max(0, min(m_current + 1, m_size - 1));
-        }
-
-        if (IsKeyPressed(KEY_LEFT))  {
-            m_current = max(0, min(m_current - 1, m_size - 1));
-        }
+        m_spinner.checkInput();
     }
 
-    size_t current() const {
-        return m_current;
-    }
-
-    void setCurrent(size_t value) {
-        m_current = value;
+    int current() const {
+        return m_spinner.current();
     }
 
     int scale() const {
@@ -49,7 +71,7 @@ public:
 
     void drawTitle() {
         char sucaminchia[100];
-        snprintf(sucaminchia, 100, "%03lu of %03lu", m_current, m_size);
+        snprintf(sucaminchia, 100, "%03d of %03d", m_spinner.current(), m_spinner.size());
 
         DrawText(m_title.c_str(), 30, 30, 30, BLUE);
         DrawText(sucaminchia, 30, 60, 20, BLUE);
@@ -75,9 +97,8 @@ public:
 
 private:
     std::string m_title;
-    size_t m_size;
+    Spinner m_spinner;
 
-    size_t m_current = 0;
     int m_rotation = 0;
     int m_scale = 10;
 

@@ -116,7 +116,7 @@ class ModelExplorer: public Screen {
 public:
     ModelExplorer(SceneAssets &assets)
         : m_assets(assets)
-        , m_explorer("MODELS EXPLORER", m_assets.modelExplorerModels.size())
+        , m_explorer("MODELS EXPLORER", (int)m_assets.modelExplorerModels.size())
     {
         m_explorer.setScale(100);
     }
@@ -158,7 +158,7 @@ class TilesExplorer: public Screen {
 public:
     TilesExplorer(SceneAssets &assets)
         : m_assets(assets)
-        , m_explorer("TILES EXPLORER", m_assets.tileExplorerMeshes.size())
+        , m_explorer("TILES EXPLORER", (int)m_assets.tileExplorerMeshes.size())
     { }
 
     void setup() {
@@ -172,7 +172,7 @@ public:
         m_explorer.checkInput();
 
         if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
-            printf(" --- tile %zu ---\n", meshNr);
+            printf(" --- tile %d ---\n", meshNr);
             print_sprite_data(m_assets.tileExplorerModels[meshNr]);
         }
 
@@ -211,6 +211,7 @@ class BitmapTest: public Screen {
 public:
     BitmapTest(TD::Resources &resources)
         : m_menuImages(resources)
+        , m_spinner((int)resources.cars().size(), KEY_DOWN, KEY_UP)
     {
         for (auto& car : resources.cars()) {
             m_carImages.emplace_back(car);
@@ -221,16 +222,18 @@ public:
     }
 
     void loop() {
+        m_spinner.checkInput();
+
         BeginDrawing();
 
         ClearBackground(::DARKGRAY);
 
         DrawTexture(m_menuImages.select.texture(),       20,  20, ::WHITE);
-        DrawTexture(m_menuImages.detail1.texture(),      20, 300, ::WHITE);
-        DrawTexture(m_menuImages.detail2.texture(),      20, 350, ::WHITE);
+        DrawTexture(m_menuImages.detail1.texture(),      20, 490, ::WHITE);
+        DrawTexture(m_menuImages.detail2.texture(),      20, 500, ::WHITE);
         DrawTexture(m_menuImages.compass.texture(),         0, 0, ::WHITE);
 
-        auto& carImages = m_carImages[2];
+        auto& carImages = m_carImages[m_spinner.current()];
 
         DrawTexture(carImages.sic.texture(),     20, 270, ::WHITE);
         DrawTexture(carImages.top.texture(),    400,  20, ::WHITE);
@@ -253,6 +256,7 @@ public:
 private:
     TD::MenuImages m_menuImages;
     std::vector<TD::CarImages> m_carImages;
+    Spinner m_spinner;
 };
 
 class CameraTest: public Screen {
