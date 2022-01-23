@@ -83,29 +83,32 @@ class GameImage {
 public:
     GameImage(const std::vector<std::byte> &imageLz, int width, const GamePalette &palette, int colorBase = 0)
         : m_textureLoaded(false)
+        , m_width(width)
     {
         auto decoded    = Decode(imageLz);
         auto bitmap8bpp = RLEDecode(decoded);
 
-        int height = static_cast<int>(bitmap8bpp.size()) / width;
+        m_height = static_cast<int>(bitmap8bpp.size()) / m_width;
 
-        m_bitmap.resize(width * height);
+        m_bitmap.resize(m_width * m_height);
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                auto srcIndex = width * (height - y - 1) + x;
-                auto dstIndex = width * y + x;
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                auto srcIndex = m_width * (m_height - y - 1) + x;
+                auto dstIndex = m_width * y + x;
                 auto pixel = bitmap8bpp[srcIndex];
                 auto color = std::to_integer<uint8_t>(pixel);
 
                 m_bitmap[dstIndex] = palette.get(color + colorBase);
             }
         }
+    }
 
-        m_image = {
+    Image image() {
+        return (Image) {
             .data = &m_bitmap[0],
-            .width = width,
-            .height = height,
+            .width = m_width,
+            .height = m_height,
             .mipmaps = 1,
             .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
         };
@@ -113,7 +116,7 @@ public:
 
     Texture2D texture() {
         if (!m_textureLoaded) {
-            m_texture = LoadTextureFromImage(m_image);
+            m_texture = LoadTextureFromImage(image());
             m_textureLoaded = true;
         }
 
@@ -126,8 +129,9 @@ public:
     }
 
 private:
+    int m_width;
+    int m_height;
     std::vector<TD::Color> m_bitmap;
-    Image m_image;
     Texture2D m_texture;
     bool m_textureLoaded;
 };
