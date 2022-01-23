@@ -71,8 +71,14 @@ void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, float fontS
     }
 }
 
-void DrawText3D(Font font, const char *text, Vector3 position, float fontSize, float fontSpacing, float lineSpacing, bool backface, Color tint)
+void DrawText3D(const char *text, Vector3 position, float fontSize, Color tint)
 {
+    auto font = GetFontDefault();
+    auto fontSpacing = 1;
+    auto lineSpacing = 0;
+    auto backface = 1;
+
+
     int length = TextLength(text);          // Total length in bytes of the text, scanned by codepoints in loop
 
     float textOffsetY = 0.0f;               // Offset between lines (on line break '\n')

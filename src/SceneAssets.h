@@ -44,6 +44,27 @@ struct SceneAssets {
         }
     }
 
+    RayLibMesh* meshForModelId(int modelId, bool isLOD) {
+        if (modelId == 0) {
+            return nullptr;
+        }
+        else if (modelId == 1) {
+            return &(carMeshes[0]);
+        }
+        else if (modelId == 2) {
+            return &(carMeshes[2]);
+        }
+        else if (modelId == 3) {
+            return &(carMeshes[1]);
+        }
+        else if (isLOD){
+            return &(objectLodMeshes[modelId]);
+        }
+        else {
+            return &(objectMeshes[modelId]);
+        }
+    }
+
     std::vector<RayLibMesh> genericTiles;
     std::vector<RayLibMesh> tileMeshes;
     std::vector<RayLibMesh> objectMeshes;

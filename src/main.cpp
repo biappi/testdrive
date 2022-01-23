@@ -335,26 +335,10 @@ public:
         }
 
         for (auto &i : m_scene.m_objects) {
-            RayLibMesh * m;
+            auto m = m_assets.meshForModelId(i.modelId(), i.isLOD());
 
-            if (i.modelId() == 0) {
+            if (!m)
                 continue;
-            }
-            else if (i.modelId() == 1) {
-                m = &(m_assets.carMeshes[0]);
-            }
-            else if (i.modelId() == 2) {
-                m = &(m_assets.carMeshes[2]);
-            }
-            else if (i.modelId() == 3) {
-                m = &(m_assets.carMeshes[1]);
-            }
-            else if (i.isLOD()){
-                m = &(m_assets.objectLodMeshes[i.modelId()]);
-            }
-            else {
-                m = &(m_assets.objectMeshes[i.modelId()]);
-            }
 
             auto model  = m->_model();
             auto position = NormalizeTDWorldLocation(i.location());
@@ -362,32 +346,34 @@ public:
             auto bb = GetModelBoundingBox(model);
 
             rlPushMatrix();
+            {
+                rlTranslatef(position.x, position.y, position.z);
 
-            rlTranslatef(position.x, position.y, position.z);
-
-            rlPushMatrix();
-            rlRotatef(angle, 0, 1, 0);
-
-            DrawModel(model, { 0 }, 1, ::WHITE);
-
-            if (m_drawBoundingBox)
-                DrawBoundingBox(bb, ::PURPLE);
-
-            rlPopMatrix();
-
-            if (m_drawObjectId) {
                 rlPushMatrix();
-                rlTranslatef(bb.max.x, bb.max.y, bb.min.z);
-                rlScalef(.005,.005f,.005f);
-                rlRotatef(90, 1, 0, 0);
-                rlRotatef(90, 0, 0, 1);
-                
-                char suca[30];
-                snprintf(suca, sizeof(suca), "ID: %02x", i.modelId());
-                DrawText3D(GetFontDefault(), suca, { 0 }, 8, 1, 0, true, ::MAROON);
-                rlPopMatrix();
-            }
+                {
+                    rlRotatef(angle, 0, 1, 0);
 
+                    DrawModel(model, { 0 }, 1, ::WHITE);
+
+                    if (m_drawBoundingBox)
+                        DrawBoundingBox(bb, ::PURPLE);
+                }
+                rlPopMatrix();
+
+                if (m_drawObjectId) {
+                    rlPushMatrix();
+                    rlTranslatef(bb.max.x, bb.max.y, bb.min.z);
+                    rlScalef(.005,.005f,.005f);
+                    rlRotatef(90, 1, 0, 0);
+                    rlRotatef(90, 0, 0, 1);
+
+                    char suca[30];
+                    snprintf(suca, sizeof(suca), "ID: %02x\nFLAGS: %04x", i.modelId(), i.flags());
+                    DrawText3D(suca, { 0 }, 8, ::MAROON);
+                    rlPopMatrix();
+                }
+
+            }
             rlPopMatrix();
         };
 
